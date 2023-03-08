@@ -1,0 +1,5 @@
+# Exclude the settings.json file:
+.vscode/settings.json
+
+# Exclude the node_modules folder.
+node_modules/*
