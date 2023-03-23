@@ -1,6 +1,8 @@
 # References:
 # Automate MySQL Integration Tasks from PowerShell
 # https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
+# Powershell: Some examples to use a MySQL Database
+# https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
 
 . "$($PSScriptRoot)\database_functions.ps1"
 
