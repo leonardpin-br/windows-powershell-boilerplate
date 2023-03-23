@@ -28,6 +28,10 @@ class ConnectionDB {
             # CREATE, UPDATE or DELETE (CRUD)
             if ($values) {
                 Write-Host "The values arraylist is not null"
+                $this.sqlCmd.CommandText = $sql
+                $this.sqlCmd.Connection = $this.connection
+
+
             }
 
             # READ (CRUD)
@@ -78,25 +82,34 @@ class ConnectionDB {
 
 function Main {
     Clear-Host
+
+    # READ
+    # ==========================================================================
+    # $connection_db = [ConnectionDB]::new()
+    # $sql = "SELECT * FROM admins"
+    # $result_set = $connection_db.Query($sql, $null)
+
+
+    # for ($i = 0; $i -lt $result_set.Count; $i++) {
+
+    #     $row = $result_set[$i]
+
+    #     Write-Host "ID: $($row["id"])"
+    #     Write-Host "First name: $($row["first_name"])"
+    #     Write-Host "Last name: $($row["last_name"])"
+    #     Write-Host "Email: $($row["email"])"
+    #     Write-Host "Username: $($row["username"])"
+    #     Write-Host "Hashed password: $($row["hashed_password"])"
+    #     Write-Host "-------------------------------------------`n"
+
+    # }
+
+    # CREATE
+    # ==========================================================================
     $connection_db = [ConnectionDB]::new()
-    $sql = "SELECT * FROM admins"
+    $sql = "INSERT INTO admins ('id', 'first_name', 'last_name', 'email', 'username', 'hashed_password')
+    VALUES ('15', 'Delete', 'Me', 'noemail@email.com', 'nouser', 'zzzzzzz');"
     $result_set = $connection_db.Query($sql, $null)
-
-
-    for ($i = 0; $i -lt $result_set.Count; $i++) {
-
-        $row = $result_set[$i]
-
-        Write-Host "ID: $($row["id"])"
-        Write-Host "First name: $($row["first_name"])"
-        Write-Host "Last name: $($row["last_name"])"
-        Write-Host "Email: $($row["email"])"
-        Write-Host "Username: $($row["username"])"
-        Write-Host "Hashed password: $($row["hashed_password"])"
-        Write-Host "-------------------------------------------`n"
-
-    }
-
 }
 
 Main
