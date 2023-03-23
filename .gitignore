@@ -1,5 +1,8 @@
 # Exclude the settings.json file:
 .vscode/settings.json
 
+# Exclude the db_credentials.py file:
+src/databases/db_credentials.py
+
 # Exclude the node_modules folder.
 node_modules/*
