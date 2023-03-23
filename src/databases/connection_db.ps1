@@ -1,3 +1,6 @@
+# References:
+# Automate MySQL Integration Tasks from PowerShell
+# https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
 
 . "$($PSScriptRoot)\database_functions.ps1"
 
@@ -18,10 +21,7 @@ class ConnectionDB {
 
         # ArrayList that will store the results (one Hashtable for each row).
         $result_set = [System.Collections.ArrayList]@()
-        $record = @{}
-
-        $data_adapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($sql, $this.connection)
-        $data_table = New-Object System.Data.DataTable
+        $record = [System.Collections.Hashtable]@{}
 
         try {
 
@@ -33,6 +33,12 @@ class ConnectionDB {
             # READ (CRUD)
             else {
 
+                # Creates the data adapter for read queries.
+                $data_adapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($sql, $this.connection)
+
+                # Creates the data table for read queries.
+                $data_table = New-Object System.Data.DataTable
+
                 # Fills the $data_table with the result set.
                 $data_adapter.Fill($data_table)
 
@@ -40,7 +46,10 @@ class ConnectionDB {
                 for ($i = 0; $i -lt $data_table.Rows.Count; $i++) {
 
                     for ($j = 0; $j -lt $data_table.Columns.Count; $j++) {
-                        $record.Add($data_table.Columns[$j], $data_table.DefaultView[$i].Row.ItemArray[$j])
+
+                        # The quotes "$(...)" are VERY IMPORTANTE!
+                        $record.Add("$($data_table.Columns[$j])", $data_table.DefaultView[$i].Row.ItemArray[$j])
+
                     }
 
                     # Fills the result set.
@@ -52,15 +61,14 @@ class ConnectionDB {
             }
 
         }
-        # catch {
 
-        # }
-
-        finally {
-            Write-Host "Finally..."
+        catch {
+            Write-Host "Catch..."
         }
 
-
+        finally {
+            Disconnect-MySQL -Connection $this.connection
+        }
 
         return $result_set
 
@@ -73,49 +81,22 @@ function Main {
     $connection_db = [ConnectionDB]::new()
     $sql = "SELECT * FROM admins"
     $result_set = $connection_db.Query($sql, $null)
-    $row = $result_set[0]
-    $row
-
-    # $row.keys | ForEach-Object{
-    #     $message = '{0} is {1}' -f $_, $row[$_]
-    #     Write-Output $message
-    # }
-
-    # Write-Output "-----------"
 
 
-    # if ($row.first_name) {
-    #     Write-Host "OK"
-    # }
+    for ($i = 0; $i -lt $result_set.Count; $i++) {
 
+        $row = $result_set[$i]
 
-    # $ageList = @{}
-    # $key = 'Kevin'
-    # $value = 36
-    # $ageList.add( $key, $value )
-    # $ageList.add( 'Alex', 9 )
-    # $ageList['Kevin']
-    # $ageList['Alex']
+        Write-Host "ID: $($row["id"])"
+        Write-Host "First name: $($row["first_name"])"
+        Write-Host "Last name: $($row["last_name"])"
+        Write-Host "Email: $($row["email"])"
+        Write-Host "Username: $($row["username"])"
+        Write-Host "Hashed password: $($row["hashed_password"])"
+        Write-Host "-------------------------------------------`n"
 
-    # for ($i = 0; $i -lt $result_set.Count; $i++) {
+    }
 
-    #     $row = $result_set[$i]
-
-    #     Write-Host "Test"
-    #     Write-Host "$($row['first_name'])"
-
-        #     $message = '{0}' -f $row[$key]
-        #     Write-Host $message
-            # Write-Host "First name: " $row['first_name']
-            # Write-Host "Last name: ${$result_set.last_name}"
-            # Write-Host "Email: ${$result_set.email}"
-            # Write-Host "Username: ${$result_set.username}"
-            # Write-Host "Hashed password: ${$result_set.hashed_password}"
-            # Write-Host "-------------------------------------------`n"
-
-
-    # }
-    # Write-Host $result_set.GetType()
 }
 
 Main
