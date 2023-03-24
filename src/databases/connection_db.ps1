@@ -75,7 +75,8 @@ class ConnectionDB {
         }
 
         catch {
-            Write-Host "Catch..."
+            $ErrorMessage = $_.Exception.Message
+            Write-Host $ErrorMessage
         }
 
         finally {
@@ -134,8 +135,9 @@ function Main {
     # UPDATE
     # ==========================================================================
     $connection_db = [ConnectionDB]::new()
-    $sql = ""
-    $sql += ""
+    $sql = "UPDATE adminszzzz "
+    $sql += "SET username = 'leo' "
+    $sql += "WHERE id = 9"
 
     $result_set = $connection_db.Query($sql, $true)
 
