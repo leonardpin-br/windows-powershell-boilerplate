@@ -7,6 +7,7 @@
 # https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
 
 . "$($PSScriptRoot)\database_functions.ps1"
+. "$($PSScriptRoot)\..\shared\functions.ps1"
 
 class ConnectionDB {
     [int32]$affected_rows = 0
@@ -28,8 +29,17 @@ class ConnectionDB {
         $record = [System.Collections.Hashtable]@{}
 
         try {
-
             $this.connection.Open()
+        }
+
+        catch {
+            PrintErrorMessage -ErrorMessage "The connection with the database could"
+        }
+
+
+
+        try {
+
 
             # CREATE, UPDATE or DELETE (CRUD)
             if ($is_data_change) {
