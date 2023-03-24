@@ -29,6 +29,8 @@ class ConnectionDB {
 
         try {
 
+            $this.connection.Open()
+
             # CREATE, UPDATE or DELETE (CRUD)
             if ($is_data_change) {
 
