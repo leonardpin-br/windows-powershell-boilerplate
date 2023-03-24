@@ -3,6 +3,8 @@
 # https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
 # Powershell: Some examples to use a MySQL Database
 # https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
+# 6.1.4 Working with Parameters
+# https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
 
 . "$($PSScriptRoot)\database_functions.ps1"
 
@@ -19,7 +21,7 @@ class ConnectionDB {
     }
 
     # Performs a query on the database.
-    [System.Collections.ArrayList]Query([string]$sql, $values) {
+    [System.Collections.ArrayList]Query([String]$sql, [Boolean]$is_data_change) {
 
         # ArrayList that will store the results (one Hashtable for each row).
         $result_set = [System.Collections.ArrayList]@()
@@ -28,11 +30,13 @@ class ConnectionDB {
         try {
 
             # CREATE, UPDATE or DELETE (CRUD)
-            if ($values) {
-                Write-Host "The values arraylist is not null"
-                $this.sqlCmd.CommandText = $sql
-                $this.sqlCmd.Connection = $this.connection
+            if ($is_data_change) {
 
+                $this.sqlCmd.Connection = $this.connection
+                $this.sqlCmd.CommandText = $sql
+
+                $this.affected_rows = $this.sqlCmd.ExecuteNonQuery()
+                $this.insert_id = $this.sqlCmd.LastInsertedId
 
             }
 
@@ -80,6 +84,17 @@ class ConnectionDB {
 
     }
 
+    # Roughly does the same as the ``mysqli::real_escape_string`` method,
+    # that is, escapes a string. It is meant to be used before sending it to
+    # the database.
+    #
+    # References:
+    # Function to escape characters in paths
+    # https://stackoverflow.com/a/46037546/3768670
+    [String]RealEscapeString([String]$string_to_escape) {
+        return [Management.Automation.WildcardPattern]::Escape($string_to_escape)
+    }
+
 }
 
 function Main {
@@ -108,10 +123,23 @@ function Main {
 
     # CREATE
     # ==========================================================================
+    # $connection_db = [ConnectionDB]::new()
+    # $sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
+    # $sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
+
+    # $result_set = $connection_db.Query($sql, $true)
+
+    # UPDATE
+    # ==========================================================================
     $connection_db = [ConnectionDB]::new()
-    $sql = "INSERT INTO admins ('id', 'first_name', 'last_name', 'email', 'username', 'hashed_password')
-    VALUES ('15', 'Delete', 'Me', 'noemail@email.com', 'nouser', 'zzzzzzz');"
-    $result_set = $connection_db.Query($sql, $null)
+    $sql = ""
+    $sql += ""
+
+    $result_set = $connection_db.Query($sql, $true)
+
+    # TODO
+    # Catch block inside Query
+
 }
 
 Main
