@@ -39,11 +39,15 @@ function Connect-MySQL {
         }
 
         elseif ($message -like "*Access denied*") {
-            PrintErrorMessage -ErrorMessage "Access denied: Check username and password AND the database name."
+            $ErrorMessage = "Access denied: Check username and password AND the database name."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
         }
 
         else {
-            PrintErrorMessage -ErrorMessage "There was an error with the database connection."
+            $ErrorMessage = "There was an error with the database connection."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
         }
 
     }

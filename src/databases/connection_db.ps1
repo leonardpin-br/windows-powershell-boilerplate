@@ -28,19 +28,13 @@ class ConnectionDB {
         $result_set = [System.Collections.ArrayList]@()
         $record = [System.Collections.Hashtable]@{}
 
-        try {
-            $this.connection.Open()
+        if ($this.connection.State -ne "Open") {
+
+            $ErrorMessage = "The connection with the database is not open."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
+
         }
-
-        catch {
-            PrintErrorMessage -ErrorMessage "The connection with the database could"
-            $ErrorType = $Error[0].Exception.GetType()
-            Write-Host -ForegroundColor Yellow $ErrorType
-            $ErrorMessage = $_.Exception.Message
-            Write-Host $ErrorMessage
-        }
-
-
 
         try {
 
@@ -132,19 +126,19 @@ function Main {
     $result_set = $connection_db.Query($sql, $null)
 
 
-    # for ($i = 0; $i -lt $result_set.Count; $i++) {
+    for ($i = 0; $i -lt $result_set.Count; $i++) {
 
-    #     $row = $result_set[$i]
+        $row = $result_set[$i]
 
-    #     Write-Host "ID: $($row["id"])"
-    #     Write-Host "First name: $($row["first_name"])"
-    #     Write-Host "Last name: $($row["last_name"])"
-    #     Write-Host "Email: $($row["email"])"
-    #     Write-Host "Username: $($row["username"])"
-    #     Write-Host "Hashed password: $($row["hashed_password"])"
-    #     Write-Host "-------------------------------------------`n"
+        Write-Host "ID: $($row["id"])"
+        Write-Host "First name: $($row["first_name"])"
+        Write-Host "Last name: $($row["last_name"])"
+        Write-Host "Email: $($row["email"])"
+        Write-Host "Username: $($row["username"])"
+        Write-Host "Hashed password: $($row["hashed_password"])"
+        Write-Host "-------------------------------------------`n"
 
-    # }
+    }
 
     # CREATE
     # ==========================================================================
