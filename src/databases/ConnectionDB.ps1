@@ -1,6 +1,3 @@
-# References:
-
-
 . "$($PSScriptRoot)\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
 
@@ -98,16 +95,11 @@ class ConnectionDB {
         }
 
         catch {
-            $ErrorType = $Error[0].Exception.GetType()
-            Write-Host -ForegroundColor Yellow $ErrorType
-            $ErrorMessage = $_.Exception.Message
-            Write-Host $ErrorMessage
+            $ErrorMessage = $_.Exception.Message.ToString()
+            $ErrorMessage = $ErrorMessage -replace ".*: "
 
-            # System.Management.Automation.MethodInvocationException
-            # Exception calling "ExecuteNonQuery" with "0" argument(s): "Table 'chain_gang.adminszzzz' doesn't exist"
-
-            # System.Management.Automation.MethodInvocationException
-            # Exception calling "ExecuteNonQuery" with "0" argument(s): "Unknown column 'noname' in 'field list'"
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
         }
 
         finally {
@@ -140,24 +132,24 @@ function Main {
 
     # READ
     # ==========================================================================
-    $ConnectionDb = [ConnectionDB]::new()
-    $Sql = "SELECT * FROM admins"
-    $ResultSet = $ConnectionDb.Query($Sql, $null)
+    # $ConnectionDb = [ConnectionDB]::new()
+    # $Sql = "SELECT * FROM admins"
+    # $ResultSet = $ConnectionDb.Query($Sql, $null)
 
 
-    for ($i = 0; $i -lt $ResultSet.Count; $i++) {
+    # for ($i = 0; $i -lt $ResultSet.Count; $i++) {
 
-        $row = $ResultSet[$i]
+    #     $row = $ResultSet[$i]
 
-        Write-Host "ID: $($row["id"])"
-        Write-Host "First name: $($row["first_name"])"
-        Write-Host "Last name: $($row["last_name"])"
-        Write-Host "Email: $($row["email"])"
-        Write-Host "Username: $($row["username"])"
-        Write-Host "Hashed password: $($row["hashed_password"])"
-        Write-Host "-------------------------------------------`n"
+    #     Write-Host "ID: $($row["id"])"
+    #     Write-Host "First name: $($row["first_name"])"
+    #     Write-Host "Last name: $($row["last_name"])"
+    #     Write-Host "Email: $($row["email"])"
+    #     Write-Host "Username: $($row["username"])"
+    #     Write-Host "Hashed password: $($row["hashed_password"])"
+    #     Write-Host "-------------------------------------------`n"
 
-    }
+    # }
 
     # CREATE
     # ==========================================================================
@@ -165,19 +157,31 @@ function Main {
     # $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
     # $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
 
-    # $ResultSet = $ConnectionDb.Query($Sql, $true)
+    # $ResultSet = $ConnectionDb.Query($Sql, $True)
 
     # UPDATE
     # ==========================================================================
     # $ConnectionDb = [ConnectionDB]::new()
     # $Sql = "UPDATE admins "
     # $Sql += "SET username = 'leo' "
-    # $Sql += "WHERE id = 29"
+    # $Sql += "WHERE id = 22"
 
-    # $ResultSet = $ConnectionDb.Query($Sql, $true)
+    # $ResultSet = $ConnectionDb.Query($Sql, $True)
+    # if ($ConnectionDb.AffectedRows -eq 0) {
+    #     PrintErrorMessage -ErrorMessage "The ID was not found."
+    # }
 
-    # TODO
-    # Catch block inside Query
+    # DELETE
+    # ==========================================================================
+    # $ConnectionDb = [ConnectionDB]::new()
+    # $Sql = "DELETE FROM admins "
+    # $Sql += "WHERE id = 22 "
+    # $Sql += "LIMIT 1"
+
+    # $ResultSet = $ConnectionDb.Query($Sql, $True)
+    # if ($ConnectionDb.AffectedRows -eq 0) {
+    #     PrintErrorMessage -ErrorMessage "The ID was not found."
+    # }
 
 }
 
