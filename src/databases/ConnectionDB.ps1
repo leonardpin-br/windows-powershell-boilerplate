@@ -127,62 +127,62 @@ class ConnectionDB {
 
 }
 
-function Main {
-    Clear-Host
+# function Main {
+#     Clear-Host
 
-    # READ
-    # ==========================================================================
-    # $ConnectionDb = [ConnectionDB]::new()
-    # $Sql = "SELECT * FROM admins"
-    # $ResultSet = $ConnectionDb.Query($Sql, $null)
+#     # READ
+#     # ==========================================================================
+#     $ConnectionDb = [ConnectionDB]::new()
+#     $Sql = "SELECT * FROM admins"
+#     $ResultSet = $ConnectionDb.Query($Sql, $null)
 
 
-    # for ($i = 0; $i -lt $ResultSet.Count; $i++) {
+#     for ($i = 0; $i -lt $ResultSet.Count; $i++) {
 
-    #     $row = $ResultSet[$i]
+#         $row = $ResultSet[$i]
 
-    #     Write-Host "ID: $($row["id"])"
-    #     Write-Host "First name: $($row["first_name"])"
-    #     Write-Host "Last name: $($row["last_name"])"
-    #     Write-Host "Email: $($row["email"])"
-    #     Write-Host "Username: $($row["username"])"
-    #     Write-Host "Hashed password: $($row["hashed_password"])"
-    #     Write-Host "-------------------------------------------`n"
+#         Write-Host "ID: $($row["id"])"
+#         Write-Host "First name: $($row["first_name"])"
+#         Write-Host "Last name: $($row["last_name"])"
+#         Write-Host "Email: $($row["email"])"
+#         Write-Host "Username: $($row["username"])"
+#         Write-Host "Hashed password: $($row["hashed_password"])"
+#         Write-Host "-------------------------------------------`n"
 
-    # }
+#     }
 
-    # CREATE
-    # ==========================================================================
-    # $ConnectionDb = [ConnectionDB]::new()
-    # $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
-    # $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
+#     # CREATE
+#     # ==========================================================================
+#     $ConnectionDb = [ConnectionDB]::new()
+#     $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
+#     $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
 
-    # $ResultSet = $ConnectionDb.Query($Sql, $True)
+#     $ResultSet = $ConnectionDb.Query($Sql, $True)
 
-    # UPDATE
-    # ==========================================================================
-    # $ConnectionDb = [ConnectionDB]::new()
-    # $Sql = "UPDATE admins "
-    # $Sql += "SET username = 'leo' "
-    # $Sql += "WHERE id = 22"
+#     # UPDATE
+#     # ==========================================================================
+#     $ConnectionDb = [ConnectionDB]::new()
+#     $Sql = "UPDATE admins "
+#     $Sql += "SET username = 'leo' "
+#     $Sql += "WHERE id = 22"
 
-    # $ResultSet = $ConnectionDb.Query($Sql, $True)
-    # if ($ConnectionDb.AffectedRows -eq 0) {
-    #     PrintErrorMessage -ErrorMessage "The ID was not found."
-    # }
+#     $ResultSet = $ConnectionDb.Query($Sql, $True)
+#     if ($ConnectionDb.AffectedRows -eq 0) {
+#         PrintErrorMessage -ErrorMessage "The ID was not found."
+#     }
 
-    # DELETE
-    # ==========================================================================
-    # $ConnectionDb = [ConnectionDB]::new()
-    # $Sql = "DELETE FROM admins "
-    # $Sql += "WHERE id = 22 "
-    # $Sql += "LIMIT 1"
+#     # DELETE
+#     # ==========================================================================
+#     $ConnectionDb = [ConnectionDB]::new()
+#     $Sql = "DELETE FROM admins "
+#     $Sql += "WHERE id = 22 "
+#     $Sql += "LIMIT 1"
 
-    # $ResultSet = $ConnectionDb.Query($Sql, $True)
-    # if ($ConnectionDb.AffectedRows -eq 0) {
-    #     PrintErrorMessage -ErrorMessage "The ID was not found."
-    # }
+#     $ResultSet = $ConnectionDb.Query($Sql, $True)
+#     if ($ConnectionDb.AffectedRows -eq 0) {
+#         PrintErrorMessage -ErrorMessage "The ID was not found."
+#     }
 
-}
+# }
 
-Main
+# Main
