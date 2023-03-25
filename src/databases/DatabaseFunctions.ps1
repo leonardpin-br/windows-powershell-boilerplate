@@ -1,7 +1,7 @@
 # Importing a script:
-. "$($PSScriptRoot)\..\..\config\db_credentials.ps1"
-. "$($PSScriptRoot)\..\shared\validation_functions.ps1"
-. "$($PSScriptRoot)\..\shared\functions.ps1"
+. "$($PSScriptRoot)\..\..\config\DBCredentials.ps1"
+. "$($PSScriptRoot)\..\shared\ValidationFunctions.ps1"
+. "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 function Connect-MySQL {
     <#

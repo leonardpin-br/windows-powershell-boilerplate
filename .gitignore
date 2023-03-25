@@ -2,7 +2,7 @@
 .vscode/settings.json
 
 # Exclude the db_credentials.ps1 file:
-config/db_credentials.ps1
+config/DBCredentials.ps1
 
 # Exclude the node_modules folder.
 node_modules/*

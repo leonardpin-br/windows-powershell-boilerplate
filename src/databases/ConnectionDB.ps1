@@ -1,8 +1,8 @@
 # References:
 
 
-. "$($PSScriptRoot)\database_functions.ps1"
-. "$($PSScriptRoot)\..\shared\functions.ps1"
+. "$($PSScriptRoot)\DatabaseFunctions.ps1"
+. "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 class ConnectionDB {
     <#

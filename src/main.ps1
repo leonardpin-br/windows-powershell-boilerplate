@@ -5,9 +5,9 @@
 # https://poshcode.gitbook.io/powershell-practice-and-style/style-guide/code-layout-and-formatting#Capitalization-Conventions
 
 # Importing a script:
-. "$($PSScriptRoot)\databases\database_functions.ps1"
-. "$($PSScriptRoot)\databases\connection_db.ps1"
-. "$($PSScriptRoot)\shared\validation_functions.ps1"
+. "$($PSScriptRoot)\databases\DatabaseFunctions.ps1"
+. "$($PSScriptRoot)\databases\ConnectionDB.ps1"
+. "$($PSScriptRoot)\shared\ValidationFunctions.ps1"
 
 # Main function.
 function Main {
