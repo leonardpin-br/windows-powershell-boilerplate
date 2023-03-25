@@ -4,6 +4,10 @@
 . "$($PSScriptRoot)\..\shared\functions.ps1"
 
 function Connect-MySQL {
+    <#
+    .SYNOPSIS
+        Connects to the MySQL server.
+    #>
 
     try {
 
@@ -55,8 +59,13 @@ function Connect-MySQL {
 }
 
 function Disconnect-MySQL {
+    <#
+    .SYNOPSIS
+        Disconnects from the MySQL server.
+    #>
 
     param (
+        # The connection object.
         $Connection
     )
 

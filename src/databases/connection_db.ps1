@@ -1,15 +1,28 @@
 # References:
-# Automate MySQL Integration Tasks from PowerShell
-# https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
-# Powershell: Some examples to use a MySQL Database
-# https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
-# 6.1.4 Working with Parameters
-# https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
+
 
 . "$($PSScriptRoot)\database_functions.ps1"
 . "$($PSScriptRoot)\..\shared\functions.ps1"
 
 class ConnectionDB {
+    <#
+    .SYNOPSIS
+        Mimics (loosely and in a very crud way) the mysqli (PHP) class.
+
+    .LINK
+        # Automate MySQL Integration Tasks from PowerShell
+        https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
+
+    .LINK
+        # Powershell: Some examples to use a MySQL Database
+        https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
+
+    .LINK
+        # 6.1.4 Working with Parameters
+        https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
+    #>
+
+
     [int32]$affected_rows = 0
     [int32]$insert_id = 0
     $connection
@@ -21,8 +34,11 @@ class ConnectionDB {
         $this.sqlCmd = $connection_and_sqlCmd[1]
     }
 
-    # Performs a query on the database.
     [System.Collections.ArrayList]Query([String]$sql, [Boolean]$is_data_change) {
+        <#
+        .SYNOPSIS
+            Performs a query on the database.
+        #>
 
         # ArrayList that will store the results (one Hashtable for each row).
         $result_set = [System.Collections.ArrayList]@()
@@ -103,14 +119,18 @@ class ConnectionDB {
 
     }
 
-    # Roughly does the same as the ``mysqli::real_escape_string`` method,
-    # that is, escapes a string. It is meant to be used before sending it to
-    # the database.
-    #
-    # References:
-    # Function to escape characters in paths
-    # https://stackoverflow.com/a/46037546/3768670
     [String]RealEscapeString([String]$string_to_escape) {
+        <#
+        .SYNOPSIS
+            Roughly does the same as the ``mysqli::real_escape_string`` method,
+            that is, escapes a string. It is meant to be used before sending it to
+            the database.
+
+        .LINK
+            # Function to escape characters in paths
+            https://stackoverflow.com/a/46037546/3768670
+        #>
+
         return [Management.Automation.WildcardPattern]::Escape($string_to_escape)
     }
 

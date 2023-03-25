@@ -1,4 +1,4 @@
-
+# Database credentials.
 
 $databaseParameters = @{
     "server" = "server_name"

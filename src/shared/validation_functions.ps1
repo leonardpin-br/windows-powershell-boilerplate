@@ -1,4 +1,8 @@
 function Is-Set {
+    <#
+        .SYNOPSIS
+            Mimics the behaviour of the PHP's function isset().
+    #>
 
     $numOfArgs = $args.Length
 
