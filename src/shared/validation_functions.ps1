@@ -4,11 +4,11 @@ function Is-Set {
             Mimics the behaviour of the PHP's function isset().
     #>
 
-    $numOfArgs = $args.Length
+    $NumberOfArguments = $Args.Length
 
-    for ($i=0; $i -lt $numOfArgs; $i++) {
+    for ($i=0; $i -lt $NumberOfArguments; $i++) {
 
-        if ($args[$i] -eq $null) {
+        if ($null -eq $Args[$i]) {
             return $false
         }
 

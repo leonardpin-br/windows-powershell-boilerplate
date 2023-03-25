@@ -17,13 +17,13 @@ function PrintErrorMessage {
         [String]$ErrorMessage
     )
 
-    # $caller_function = (Get-PSCallStack)[1].Command
-    $caller_function = (Get-PSCallStack)[1]
-    $caller_function = $caller_function -replace "at " -replace ",.*"
+    # $CallerFunction = (Get-PSCallStack)[1].Command
+    $CallerFunction = (Get-PSCallStack)[1]
+    $CallerFunction = $CallerFunction -replace "at " -replace ",.*"
 
     Write-Host "`n`n================================================================================================`n"
     Write-Host -ForegroundColor Red "Error:"
-    Write-Host "$($caller_function)(): $($ErrorMessage)"
+    Write-Host "$($CallerFunction)(): $($ErrorMessage)"
     Write-Host ""
     Write-Host "================================================================================================`n`n"
 

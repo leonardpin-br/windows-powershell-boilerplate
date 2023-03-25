@@ -14,16 +14,16 @@ function Connect-MySQL {
         # Loads the functionality from the MySQL Connector.
         [void][System.Reflection.Assembly]::LoadFrom("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll")
 
-        $connection = New-Object MySql.Data.MySqlClient.MySqlConnection;
+        $Connection = New-Object MySql.Data.MySqlClient.MySqlConnection;
 
-        $connection.ConnectionString="server=$($databaseParameters['server']);user id=$($databaseParameters['user']);password=$($databaseParameters['password']);database=$($databaseParameters['database']);pooling=false"
+        $Connection.ConnectionString="server=$($DatabaseParameters['server']);user id=$($DatabaseParameters['user']);password=$($DatabaseParameters['password']);database=$($DatabaseParameters['database']);pooling=false"
 
-        $sqlCmd = New-Object MySql.Data.MySqlClient.MySqlCommand
+        $SqlCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
 
-        $connection.Open()
+        $Connection.Open()
 
-        $data = @($connection, $sqlCmd)
-        return $data
+        $Data = @($Connection, $SqlCommand)
+        return $Data
 
     }
 

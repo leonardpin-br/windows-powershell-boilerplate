@@ -22,29 +22,28 @@ class ConnectionDB {
         https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
     #>
 
-
-    [int32]$affected_rows = 0
-    [int32]$insert_id = 0
-    $connection
-    $sqlCmd
+    [int32]$AffectedRows = 0
+    [int32]$InsertId = 0
+    $Connection
+    $SqlCommand
 
     ConnectionDB() {
-        $connection_and_sqlCmd = Connect-MySQL
-        $this.connection = $connection_and_sqlCmd[0]
-        $this.sqlCmd = $connection_and_sqlCmd[1]
+        $ConnectionAndSqlCommand = Connect-MySQL
+        $this.Connection = $ConnectionAndSqlCommand[0]
+        $this.SqlCommand = $ConnectionAndSqlCommand[1]
     }
 
-    [System.Collections.ArrayList]Query([String]$sql, [Boolean]$is_data_change) {
+    [System.Collections.ArrayList]Query([String]$Sql, [Boolean]$IsDataChange) {
         <#
         .SYNOPSIS
             Performs a query on the database.
         #>
 
         # ArrayList that will store the results (one Hashtable for each row).
-        $result_set = [System.Collections.ArrayList]@()
-        $record = [System.Collections.Hashtable]@{}
+        $ResultSet = [System.Collections.ArrayList]@()
+        $Record = [System.Collections.Hashtable]@{}
 
-        if ($this.connection.State -ne "Open") {
+        if ($this.Connection.State -ne "Open") {
 
             $ErrorMessage = "The connection with the database is not open."
             PrintErrorMessage -ErrorMessage $ErrorMessage
@@ -56,13 +55,13 @@ class ConnectionDB {
 
 
             # CREATE, UPDATE or DELETE (CRUD)
-            if ($is_data_change) {
+            if ($IsDataChange) {
 
-                $this.sqlCmd.Connection = $this.connection
-                $this.sqlCmd.CommandText = $sql
+                $this.SqlCommand.Connection = $this.Connection
+                $this.SqlCommand.CommandText = $Sql
 
-                $this.affected_rows = $this.sqlCmd.ExecuteNonQuery()
-                $this.insert_id = $this.sqlCmd.LastInsertedId
+                $this.AffectedRows = $this.SqlCommand.ExecuteNonQuery()
+                $this.InsertId = $this.SqlCommand.LastInsertedId
 
             }
 
@@ -70,27 +69,27 @@ class ConnectionDB {
             else {
 
                 # Creates the data adapter for read queries.
-                $data_adapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($sql, $this.connection)
+                $DataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($Sql, $this.Connection)
 
                 # Creates the data table for read queries.
-                $data_table = New-Object System.Data.DataTable
+                $DataTable = New-Object System.Data.DataTable
 
-                # Fills the $data_table with the result set.
-                $data_adapter.Fill($data_table)
+                # Fills the $DataTable with the result set.
+                $DataAdapter.Fill($DataTable)
 
                 # Fills the hashtable.
-                for ($i = 0; $i -lt $data_table.Rows.Count; $i++) {
+                for ($i = 0; $i -lt $DataTable.Rows.Count; $i++) {
 
-                    for ($j = 0; $j -lt $data_table.Columns.Count; $j++) {
+                    for ($j = 0; $j -lt $DataTable.Columns.Count; $j++) {
 
                         # The quotes "$(...)" are VERY IMPORTANTE!
-                        $record.Add("$($data_table.Columns[$j])", $data_table.DefaultView[$i].Row.ItemArray[$j])
+                        $Record.Add("$($DataTable.Columns[$j])", $DataTable.DefaultView[$i].Row.ItemArray[$j])
 
                     }
 
                     # Fills the result set.
-                    $result_set.Add($record)
-                    $record = @{}
+                    $ResultSet.Add($Record)
+                    $Record = @{}
 
                 }
 
@@ -112,14 +111,14 @@ class ConnectionDB {
         }
 
         finally {
-            Disconnect-MySQL -Connection $this.connection
+            Disconnect-MySQL -Connection $this.Connection
         }
 
-        return $result_set
+        return $ResultSet
 
     }
 
-    [String]RealEscapeString([String]$string_to_escape) {
+    [String]RealEscapeString([String]$StringToEscape) {
         <#
         .SYNOPSIS
             Roughly does the same as the ``mysqli::real_escape_string`` method,
@@ -131,7 +130,7 @@ class ConnectionDB {
             https://stackoverflow.com/a/46037546/3768670
         #>
 
-        return [Management.Automation.WildcardPattern]::Escape($string_to_escape)
+        return [Management.Automation.WildcardPattern]::Escape($StringToEscape)
     }
 
 }
@@ -141,14 +140,14 @@ function Main {
 
     # READ
     # ==========================================================================
-    $connection_db = [ConnectionDB]::new()
-    $sql = "SELECT * FROM admins"
-    $result_set = $connection_db.Query($sql, $null)
+    $ConnectionDb = [ConnectionDB]::new()
+    $Sql = "SELECT * FROM admins"
+    $ResultSet = $ConnectionDb.Query($Sql, $null)
 
 
-    for ($i = 0; $i -lt $result_set.Count; $i++) {
+    for ($i = 0; $i -lt $ResultSet.Count; $i++) {
 
-        $row = $result_set[$i]
+        $row = $ResultSet[$i]
 
         Write-Host "ID: $($row["id"])"
         Write-Host "First name: $($row["first_name"])"
@@ -162,20 +161,20 @@ function Main {
 
     # CREATE
     # ==========================================================================
-    # $connection_db = [ConnectionDB]::new()
-    # $sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
-    # $sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
+    # $ConnectionDb = [ConnectionDB]::new()
+    # $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
+    # $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
 
-    # $result_set = $connection_db.Query($sql, $true)
+    # $ResultSet = $ConnectionDb.Query($Sql, $true)
 
     # UPDATE
     # ==========================================================================
-    # $connection_db = [ConnectionDB]::new()
-    # $sql = "UPDATE admins "
-    # $sql += "SET username = 'leo' "
-    # $sql += "WHERE id = 29"
+    # $ConnectionDb = [ConnectionDB]::new()
+    # $Sql = "UPDATE admins "
+    # $Sql += "SET username = 'leo' "
+    # $Sql += "WHERE id = 29"
 
-    # $result_set = $connection_db.Query($sql, $true)
+    # $ResultSet = $ConnectionDb.Query($Sql, $true)
 
     # TODO
     # Catch block inside Query

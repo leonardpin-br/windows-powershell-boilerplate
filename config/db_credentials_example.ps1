@@ -1,6 +1,6 @@
 # Database credentials.
 
-$databaseParameters = @{
+$DatabaseParameters = @{
     "server" = "server_name"
     "user" = "username"
     "password" = "user_password"
