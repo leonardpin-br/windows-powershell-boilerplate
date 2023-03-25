@@ -16,6 +16,8 @@ function Connect-MySQL {
 
         $sqlCmd = New-Object MySql.Data.MySqlClient.MySqlCommand
 
+        $connection.Open()
+
         $data = @($connection, $sqlCmd)
         return $data
 
@@ -26,7 +28,14 @@ function Connect-MySQL {
         $message = $Error[0].Exception.Message.ToString()
 
         if ($message -like "*Unable to connect to any of the specified MySQL hosts*") {
-            PrintErrorMessage -ErrorMessage "The MySQL server is not available."
+
+            $ErrorMessage = "The MySQL server is not available."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+
+            # Not being able to connect tho the server is a non-terminating error.
+            # The line below is necessary to stop execution.
+            throw $ErrorMessage
+
         }
 
         elseif ($message -like "*Access denied*") {

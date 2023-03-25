@@ -34,6 +34,10 @@ class ConnectionDB {
 
         catch {
             PrintErrorMessage -ErrorMessage "The connection with the database could"
+            $ErrorType = $Error[0].Exception.GetType()
+            Write-Host -ForegroundColor Yellow $ErrorType
+            $ErrorMessage = $_.Exception.Message
+            Write-Host $ErrorMessage
         }
 
 
@@ -85,8 +89,16 @@ class ConnectionDB {
         }
 
         catch {
+            $ErrorType = $Error[0].Exception.GetType()
+            Write-Host -ForegroundColor Yellow $ErrorType
             $ErrorMessage = $_.Exception.Message
             Write-Host $ErrorMessage
+
+            # System.Management.Automation.MethodInvocationException
+            # Exception calling "ExecuteNonQuery" with "0" argument(s): "Table 'chain_gang.adminszzzz' doesn't exist"
+
+            # System.Management.Automation.MethodInvocationException
+            # Exception calling "ExecuteNonQuery" with "0" argument(s): "Unknown column 'noname' in 'field list'"
         }
 
         finally {
@@ -115,9 +127,9 @@ function Main {
 
     # READ
     # ==========================================================================
-    # $connection_db = [ConnectionDB]::new()
-    # $sql = "SELECT * FROM admins"
-    # $result_set = $connection_db.Query($sql, $null)
+    $connection_db = [ConnectionDB]::new()
+    $sql = "SELECT * FROM admins"
+    $result_set = $connection_db.Query($sql, $null)
 
 
     # for ($i = 0; $i -lt $result_set.Count; $i++) {
@@ -144,12 +156,12 @@ function Main {
 
     # UPDATE
     # ==========================================================================
-    $connection_db = [ConnectionDB]::new()
-    $sql = "UPDATE adminszzzz "
-    $sql += "SET username = 'leo' "
-    $sql += "WHERE id = 9"
+    # $connection_db = [ConnectionDB]::new()
+    # $sql = "UPDATE admins "
+    # $sql += "SET username = 'leo' "
+    # $sql += "WHERE id = 29"
 
-    $result_set = $connection_db.Query($sql, $true)
+    # $result_set = $connection_db.Query($sql, $true)
 
     # TODO
     # Catch block inside Query
