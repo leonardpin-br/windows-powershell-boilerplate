@@ -1,10 +1,27 @@
-. "$($PSScriptRoot)\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 class ConnectionDB {
     <#
     .SYNOPSIS
+        Represents a connection between Powershell and a MySQL database.
+
+    .DESCRIPTION
         Mimics (loosely and in a very crud way) the mysqli (PHP) class.
+
+    .PARAMETER MySqlData
+        [String] Complete path to the MySQL Connector .dll file.
+
+    .PARAMETER Server
+        [String] Server name or IP.
+
+    .PARAMETER User
+        [String] The username.
+
+    .PARAMETER Password
+        [String] The password.
+
+    .PARAMETER Database
+        [String] The database name.
 
     .LINK
         # Automate MySQL Integration Tasks from PowerShell
@@ -24,10 +41,46 @@ class ConnectionDB {
     $Connection
     $SqlCommand
 
-    ConnectionDB() {
-        $ConnectionAndSqlCommand = Connect-MySQL
-        $this.Connection = $ConnectionAndSqlCommand[0]
-        $this.SqlCommand = $ConnectionAndSqlCommand[1]
+    ConnectionDB([String]$MySqlData, [String]$Server, [String]$User, [String]$Password, [String]$Database) {
+
+        $this.LoadConnector($MySqlData)
+
+        # Tries to connect to the MySQL database.
+        # ----------------------------------------------------------------------
+        try {
+
+            $this.Connection = New-Object MySql.Data.MySqlClient.MySqlConnection;
+
+            $ConnectionString = "server=$($Server);user id=$($User);password=$($Password);database=$($Database);pooling=false"
+            $this.Connection.ConnectionString = $ConnectionString
+
+            $this.SqlCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+
+            $this.Connection.Open()
+
+        }
+
+        catch {
+            [String]$ErrorMessage = $_.Exception.Message.ToString()
+            $ErrorMessage = $ErrorMessage.Remove(0, 47)
+
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
+        }
+    }
+
+    [void]LoadConnector([String]$MySqlData) {
+        # Tries to load the MySQL connector.
+        # ----------------------------------------------------------------------
+        try {
+            # Loads the functionality from the MySQL Connector.
+            [void][System.Reflection.Assembly]::LoadFrom($MySqlData)
+        }
+        catch {
+            $ErrorMessage = "Unable to load the MySQL Connector from `"$($MySqlData)`"."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
+        }
     }
 
     [System.Collections.ArrayList]Query([String]$Sql, [Boolean]$IsDataChange) {

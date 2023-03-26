@@ -1,60 +1,42 @@
 # Importing a script:
-. "$($PSScriptRoot)\..\..\config\DBCredentials.ps1"
+. "$($PSScriptRoot)\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\shared\ValidationFunctions.ps1"
-. "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 function Connect-MySQL {
     <#
     .SYNOPSIS
         Connects to the MySQL server.
+
+    .PARAMETER MySqlData
+        [String] Complete path to the MySQL Connector .dll file.
+
+    .PARAMETER Server
+        [String] Server name or IP.
+
+    .PARAMETER User
+        [String] The username.
+
+    .PARAMETER Password
+        [String] The password.
+
+    .PARAMETER Database
+        [String] The database name.
+
+    .OUTPUTS
+        ConnectionDB instance object.
     #>
 
-    try {
+    param(
+        [String]$MySqlData,
+        [String]$Server,
+        [String]$User,
+        [String]$Password,
+        [String]$Database
+    )
 
-        # Loads the functionality from the MySQL Connector.
-        [void][System.Reflection.Assembly]::LoadFrom("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll")
+    $Connection = [ConnectionDB]::new($MySqlData, $Server, $User, $Password, $Database)
 
-        $Connection = New-Object MySql.Data.MySqlClient.MySqlConnection;
-
-        $Connection.ConnectionString="server=$($DatabaseParameters['server']);user id=$($DatabaseParameters['user']);password=$($DatabaseParameters['password']);database=$($DatabaseParameters['database']);pooling=false"
-
-        $SqlCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
-
-        $Connection.Open()
-
-        $Data = @($Connection, $SqlCommand)
-        return $Data
-
-    }
-
-    catch {
-
-        $message = $Error[0].Exception.Message.ToString()
-
-        if ($message -like "*Unable to connect to any of the specified MySQL hosts*") {
-
-            $ErrorMessage = "The MySQL server is not available."
-            PrintErrorMessage -ErrorMessage $ErrorMessage
-
-            # Not being able to connect tho the server is a non-terminating error.
-            # The line below is necessary to stop execution.
-            throw $ErrorMessage
-
-        }
-
-        elseif ($message -like "*Access denied*") {
-            $ErrorMessage = "Access denied: Check username and password AND the database name."
-            PrintErrorMessage -ErrorMessage $ErrorMessage
-            throw $ErrorMessage
-        }
-
-        else {
-            $ErrorMessage = "There was an error with the database connection."
-            PrintErrorMessage -ErrorMessage $ErrorMessage
-            throw $ErrorMessage
-        }
-
-    }
+    return $Connection
 
 }
 
