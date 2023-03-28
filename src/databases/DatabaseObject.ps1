@@ -64,7 +64,7 @@ class DatabaseObject {
 
     }
 
-    hidden static [array]Instantiate([type]$TargetType, $Record) {
+    hidden static [System.Collections.ArrayList]Instantiate([type]$TargetType, $Record) {
         $ObjectArray = [System.Collections.ArrayList]@()
         # $Object = [PSCustomObject]@{}
 
