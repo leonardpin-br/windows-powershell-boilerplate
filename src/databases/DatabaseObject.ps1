@@ -3,6 +3,7 @@
 
 . "$($PSScriptRoot)\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\ConnectionDB.ps1"
+. "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 class DatabaseObject {
     <#
@@ -28,7 +29,9 @@ class DatabaseObject {
     DatabaseObject() {
         $Type = $this.GetType()
         if ($Type -eq [DatabaseObject]) {
-            throw("Class $type must be inherited.")
+            $ErrorMessage = "Class $type must be inherited."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
         }
     }
 
@@ -40,7 +43,9 @@ class DatabaseObject {
 
         $Result = $TargetType::Database.Query($Sql, $false)
         if (-not $Result) {
-            throw("Database query failed.")
+            $ErrorMessage = "Database query failed."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
         }
 
         # Results into objects
