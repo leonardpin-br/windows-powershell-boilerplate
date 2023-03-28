@@ -66,7 +66,7 @@ class DatabaseObject {
 
     hidden static [System.Collections.ArrayList]Instantiate([type]$TargetType, $Record) {
         $ObjectArray = [System.Collections.ArrayList]@()
-        # $Object = [PSCustomObject]@{}
+        $Object = $TargetType::new()
 
         # foreach($Key in $Record.Keys) {
         #     if ( [bool]($Object.PSobject.Properties | Where-Object { $_.Name -eq "myPropertyNameToTest"}) ) {
@@ -74,7 +74,6 @@ class DatabaseObject {
         #     }
         # }
 
-        # return $Object
         $ObjectArray.Add($Record)
         return $ObjectArray
     }
