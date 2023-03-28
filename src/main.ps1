@@ -6,7 +6,8 @@
 
 # Importing a script:
 . "$($PSScriptRoot)\..\config\Initialize.ps1"
-. "$($PSScriptRoot)\..\src\databases\ConnectionDB.ps1"
+. "$($PSScriptRoot)\..\src\databases\DatabaseFunctions.ps1"
+. "$($PSScriptRoot)\..\src\databases\DatabaseObject.ps1"
 
 # Main function.
 function Main {
@@ -16,26 +17,26 @@ function Main {
     #>
 
     # Starts clearing the terminal.
-    Clear-Host
+    # Clear-Host
 
     # READ
     # ==========================================================================
-    $Sql = "SELECT * FROM admins"
-    $ResultSet = $database.Query($Sql, $null)
+    # $Sql = "SELECT * FROM admins"
+    # $ResultSet = $database.Query($Sql, $null)
 
-    for ($i = 0; $i -lt $ResultSet.Count; $i++) {
+    # for ($i = 0; $i -lt $ResultSet.Count; $i++) {
 
-        $row = $ResultSet[$i]
+    #     $row = $ResultSet[$i]
 
-        Write-Host "ID: $($row["id"])"
-        Write-Host "First name: $($row["first_name"])"
-        Write-Host "Last name: $($row["last_name"])"
-        Write-Host "Email: $($row["email"])"
-        Write-Host "Username: $($row["username"])"
-        Write-Host "Hashed password: $($row["hashed_password"])"
-        Write-Host "-------------------------------------------`n"
+    #     Write-Host "ID: $($row["id"])"
+    #     Write-Host "First name: $($row["first_name"])"
+    #     Write-Host "Last name: $($row["last_name"])"
+    #     Write-Host "Email: $($row["email"])"
+    #     Write-Host "Username: $($row["username"])"
+    #     Write-Host "Hashed password: $($row["hashed_password"])"
+    #     Write-Host "-------------------------------------------`n"
 
-    }
+    # }
 
 #     # CREATE
 #     # ==========================================================================
@@ -68,6 +69,9 @@ function Main {
 #     if ($ConnectionDb.AffectedRows -eq 0) {
 #         PrintErrorMessage -ErrorMessage "The ID was not found."
 #     }
+
+    $AdminsTableName = [Admins]::TableName
+    Write-Host $AdminsTableName
 }
 
 Main

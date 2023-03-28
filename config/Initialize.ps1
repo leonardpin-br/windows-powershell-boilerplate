@@ -10,4 +10,4 @@ $Password = $DatabaseParameters["password"]
 $Database = $DatabaseParameters["database"]
 
 $database = Connect-MySQL -MySqlData $MySqlData -Server $Server -User $User -Password $Password -Database $Database
-# [DatabaseObject]::SetDatabase($Database)
+[DatabaseObject]::SetDatabase([DatabaseObject], $Database)
