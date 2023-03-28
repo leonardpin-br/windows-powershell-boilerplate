@@ -36,9 +36,38 @@ class DatabaseObject {
         $TargetType::Database = $Database
     }
 
-    hidden static [psobject]Instantiate([type]$TargetType, $Record) {
-        $Object = $TargetType::new()
-        return $Object
+    static [array]FindBySql([type]$TargetType, $Sql) {
+
+        $Result = $TargetType::Database.Query($Sql, $false)
+        if (-not $Result) {
+            throw("Database query failed.")
+        }
+
+        # Results into objects
+        $ObjectArray =[System.Collections.ArrayList]@()
+
+        for ($i = 0; $i -lt $Result.Count; $i++) {
+            $ObjectArray.Add( $TargetType::Instantiate($TargetType, $Result[$i]) )
+        }
+
+        # My alternative to mysqli_result::free() method.
+        Clear-Variable -Name "Result"
+
+        return $ObjectArray
+
+    }
+
+    hidden static [PSCustomObject]Instantiate([type]$TargetType, $Record) {
+        # $Object = [PSCustomObject]@{}
+
+        # foreach($Key in $Record.Keys) {
+        #     if ( [bool]($Object.PSobject.Properties | Where-Object { $_.Name -eq "myPropertyNameToTest"}) ) {
+        #         $Object | Add-Member -MemberType NoteProperty -Name $Key -Value $Record[$Key]
+        #     }
+        # }
+
+        # return $Object
+        return $Record
     }
 }
 

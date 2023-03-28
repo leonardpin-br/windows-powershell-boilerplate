@@ -70,8 +70,9 @@ function Main {
 #         PrintErrorMessage -ErrorMessage "The ID was not found."
 #     }
 
-    $AdminsTableName = [Admins]::TableName
-    Write-Host $AdminsTableName
+    $Sql = "SELECT * FROM admins"
+    $Result = [Admins]::FindBySql([Admins], $Sql)
+    Write-Host "After Result"
 }
 
 Main
