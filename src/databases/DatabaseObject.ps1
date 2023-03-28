@@ -27,19 +27,19 @@ class DatabaseObject {
 
     # Makes this class abstract.
     DatabaseObject() {
-        $Type = $this.GetType()
-        if ($Type -eq [DatabaseObject]) {
-            $ErrorMessage = "Class $type must be inherited."
-            PrintErrorMessage -ErrorMessage $ErrorMessage
-            throw $ErrorMessage
-        }
+        # $Type = $this.GetType()
+        # if ($Type -eq [DatabaseObject]) {
+        #     $ErrorMessage = "Class $type must be inherited."
+        #     PrintErrorMessage -ErrorMessage $ErrorMessage
+        #     throw $ErrorMessage
+        # }
     }
 
     static [void]SetDatabase([type]$TargetType, $Database) {
         $TargetType::Database = $Database
     }
 
-    static [array]FindBySql([type]$TargetType, $Sql) {
+    static [System.Collections.ArrayList]FindBySql([type]$TargetType, $Sql) {
 
         $Result = $TargetType::Database.Query($Sql, $false)
         if (-not $Result) {
@@ -50,9 +50,11 @@ class DatabaseObject {
 
         # Results into objects
         $ObjectArray =[System.Collections.ArrayList]@()
+        $NewInstance = $null
 
         for ($i = 0; $i -lt $Result.Count; $i++) {
-            $ObjectArray.Add( $TargetType::Instantiate($TargetType, $Result[$i]) )
+            $NewInstance = $TargetType::Instantiate($TargetType, $Result[$i])[0]
+            $ObjectArray.Add( $NewInstance )
         }
 
         # My alternative to mysqli_result::free() method.
@@ -62,7 +64,8 @@ class DatabaseObject {
 
     }
 
-    hidden static [PSCustomObject]Instantiate([type]$TargetType, $Record) {
+    hidden static [array]Instantiate([type]$TargetType, $Record) {
+        $ObjectArray = [System.Collections.ArrayList]@()
         # $Object = [PSCustomObject]@{}
 
         # foreach($Key in $Record.Keys) {
@@ -72,7 +75,8 @@ class DatabaseObject {
         # }
 
         # return $Object
-        return $Record
+        $ObjectArray.Add($Record)
+        return $ObjectArray
     }
 }
 
