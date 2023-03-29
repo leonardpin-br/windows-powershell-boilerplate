@@ -88,8 +88,11 @@ function Main {
     # $Admin = [Admins]::new($Properties)
     # Write-Host "After Result"
 
-    $Result = [Admins]::FindAll([Admins])
-    Write-Host "After Result"
+    # $Result = [Admins]::FindAll([Admins])
+    # Write-Host "After Result"
+
+    $Result = [Admins]::CountAll([Admins])
+    Write-Host "The row count is $($Result)."
 }
 
 Main

@@ -69,6 +69,15 @@ class DatabaseObject {
         return $TargetType::FindBySql($TargetType, $Sql)
     }
 
+    static [int]CountAll([type]$TargetType) {
+        $Sql = "SELECT COUNT(*) FROM $($TargetType::TableName)"
+        $ResultSet = $TargetType::Database.Query($Sql, $null)
+        $Row = $ResultSet[0]
+        $Value = $Row["COUNT(*)"]
+
+        return $Value
+    }
+
     hidden static [System.Collections.ArrayList]Instantiate([type]$TargetType, $Record) {
         <#
         .SYNOPSIS
