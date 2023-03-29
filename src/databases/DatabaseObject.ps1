@@ -64,6 +64,11 @@ class DatabaseObject {
 
     }
 
+    static [System.Collections.ArrayList]FindAll([type]$TargetType){
+        $Sql = "SELECT * FROM $($TargetType::TableName)"
+        return $TargetType::FindBySql($TargetType, $Sql)
+    }
+
     hidden static [System.Collections.ArrayList]Instantiate([type]$TargetType, $Record) {
         <#
         .SYNOPSIS

@@ -73,9 +73,9 @@ function Main {
     # # Expected error:
     # $Test = [DatabaseObject]::new()
 
-    $Sql = "SELECT * FROM admins"
-    $Result = [Admins]::FindBySql([Admins], $Sql)
-    Write-Host "After Result"
+    # $Sql = "SELECT * FROM admins"
+    # $Result = [Admins]::FindBySql([Admins], $Sql)
+    # Write-Host "After Result"
 
     # $Properties = @{
     #     first_name = "Leonardo";
@@ -87,6 +87,9 @@ function Main {
     # }
     # $Admin = [Admins]::new($Properties)
     # Write-Host "After Result"
+
+    $Result = [Admins]::FindAll([Admins])
+    Write-Host "After Result"
 }
 
 Main
