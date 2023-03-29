@@ -27,12 +27,12 @@ class DatabaseObject {
 
     # Makes this class abstract.
     DatabaseObject() {
-        # $Type = $this.GetType()
-        # if ($Type -eq [DatabaseObject]) {
-        #     $ErrorMessage = "Class $type must be inherited."
-        #     PrintErrorMessage -ErrorMessage $ErrorMessage
-        #     throw $ErrorMessage
-        # }
+        $Type = $this.GetType()
+        if ($Type -eq [DatabaseObject]) {
+            $ErrorMessage = "Class $type must be inherited."
+            PrintErrorMessage -ErrorMessage $ErrorMessage
+            throw $ErrorMessage
+        }
     }
 
     static [void]SetDatabase([type]$TargetType, $Database) {
@@ -49,7 +49,7 @@ class DatabaseObject {
         }
 
         # Results into objects
-        $ObjectArray =[System.Collections.ArrayList]@()
+        $ObjectArray = [System.Collections.ArrayList]@()
         $NewInstance = $null
 
         for ($i = 0; $i -lt $Result.Count; $i++) {
@@ -65,22 +65,83 @@ class DatabaseObject {
     }
 
     hidden static [System.Collections.ArrayList]Instantiate([type]$TargetType, $Record) {
+        <#
+        .SYNOPSIS
+            Creates an instance of itself.
+
+        .DESCRIPTION
+            The properties will be automatically assigned.
+
+        .PARAMETER [type]$TargetType
+            The class itself.
+
+        .PARAMETER [System.Collections.Hashtable]$Record
+            A hashtable representing a row in the result set table.
+
+        .OUTPUTS
+            An instance of the class
+
+        .LINK
+            # Check if Object has Property in PowerShell
+            https://java2blog.com/check-if-object-has-property-powershell/
+        #>
+
         $ObjectArray = [System.Collections.ArrayList]@()
-        $Object = $TargetType::new()
+        $Object = $TargetType::new($null)
 
-        # foreach($Key in $Record.Keys) {
-        #     if ( [bool]($Object.PSobject.Properties | Where-Object { $_.Name -eq "myPropertyNameToTest"}) ) {
-        #         $Object | Add-Member -MemberType NoteProperty -Name $Key -Value $Record[$Key]
-        #     }
-        # }
+        foreach($Key in $Record.Keys) {
+            if (Get-Member -inputobject $Object -name $Key -Membertype Properties) {
+                $Object.$Key = $Record[$Key]
+            }
+        }
 
-        $ObjectArray.Add($Record)
+        $ObjectArray.Add($Object)
         return $ObjectArray
     }
+
 }
 
 class Admins : DatabaseObject {
     hidden static $TableName = "admins"
+    hidden static $DBColumns = [System.Collections.ArrayList]@(
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'username',
+        'hashed_password'
+    )
+
+    $id
+    $first_name
+    $last_name
+    $email
+    $username
+    $hashed_password
+    $password
+    $confirm_password
+    $password_required = $True
+
+    Admins($Properties) {
+
+        if ($null -ne $Properties) {
+            $this.first_name       = $Properties["first_name"]
+            $this.last_name        = $Properties["last_name"]
+            $this.email            = $Properties["email"]
+            $this.username         = $Properties["username"]
+            $this.password         = $Properties["password"]
+            $this.confirm_password = $Properties["confirm_password"]
+        }
+        else {
+            $this.first_name       = ""
+            $this.last_name        = ""
+            $this.email            = ""
+            $this.username         = ""
+            $this.password         = ""
+            $this.confirm_password = ""
+        }
+
+    }
 
 }
 

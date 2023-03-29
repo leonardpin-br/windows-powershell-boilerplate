@@ -76,6 +76,17 @@ function Main {
     $Sql = "SELECT * FROM admins"
     $Result = [Admins]::FindBySql([Admins], $Sql)
     Write-Host "After Result"
+
+    # $Properties = @{
+    #     first_name = "Leonardo";
+    #     last_name = "Pinheiro";
+    #     email = "info@leonardopinheiro.net";
+    #     username = "leonardo";
+    #     password = "password";
+    #     confirm_password = "password";
+    # }
+    # $Admin = [Admins]::new($Properties)
+    # Write-Host "After Result"
 }
 
 Main
