@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Class to be instantiated from all the others that access the database.
+    Abstract superclass to be inherited from all the others that access the database.
 .DESCRIPTION
     It is important to remember that, in PowerShell, static methods need to
     receive, as argument, the type.
@@ -9,6 +9,12 @@
 .LINK
     # How to Create Descriptive PowerShell Comments
     https://adamtheautomator.com/powershell-comment/
+
+    # Powershell v5 Classes & Concepts
+    https://xainey.github.io/2016/powershell-classes-and-concepts/#abstract-classes
+
+    # How to reference the class and static properties dynamically from static methods in PowerShell?
+    https://stackoverflow.com/a/75861705/3768670
 #>
 
 . "$($PSScriptRoot)\DatabaseFunctions.ps1"
@@ -16,16 +22,6 @@
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 class DatabaseObject {
-    <#
-    .SYNOPSIS
-        Abstract superclass to be instantiated from all the others that access the database.
-    .LINK
-        # Powershell v5 Classes & Concepts
-        https://xainey.github.io/2016/powershell-classes-and-concepts/#abstract-classes
-
-        # How to reference the class and static properties dynamically from static methods in PowerShell?
-        https://stackoverflow.com/a/75861705/3768670
-    #>
 
     # [ConnectionDB] object that will store the connection.
     hidden static $Database
