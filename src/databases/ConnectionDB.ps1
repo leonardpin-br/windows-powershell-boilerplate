@@ -22,6 +22,8 @@
 
     # 6.1.4 Working with Parameters
     https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
+.EXAMPLE
+    $database = Connect-MySQL -MySqlData $MySqlData -Server $Server -User $User -Password $Password -Database $Database
 #>
 
 . "$($PSScriptRoot)\..\shared\Functions.ps1"

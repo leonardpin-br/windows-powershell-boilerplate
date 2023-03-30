@@ -25,12 +25,14 @@
             "    ${3:Parameter description}",
             ".OUTPUTS",
             "    ${4:Return description}",
-            ".EXAMPLE",
-            "    PS> extension -name \"File\"",
-            "    File.txt",
+            ".NOTES",
+            "    Information or caveats about the function e.g. 'This function is not supported in Linux'",
             ".LINK",
             "    # Link description",
             "    http://www.fabrikam.com/extension.html",
+            ".EXAMPLE",
+            "    PS> extension -name \"File\"",
+            "    File.txt",
             "#>"
         ],
         "description": "Template documentation block."
