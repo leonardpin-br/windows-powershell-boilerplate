@@ -1,40 +1,32 @@
+<#
+.SYNOPSIS
+    Class that represents a connection between Powershell and a MySQL database.
+.DESCRIPTION
+    Mimics (loosely and in a very crud way) the mysqli (PHP) class.
+.PARAMETER MySqlData
+    [String] Complete path to the MySQL Connector .dll file.
+.PARAMETER Server
+    [String] Server name or IP.
+.PARAMETER User
+    [String] The username.
+.PARAMETER Password
+    [String] The password.
+.PARAMETER Database
+    [String] The database name.
+.LINK
+    # Automate MySQL Integration Tasks from PowerShell
+    https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
+
+    # Powershell: Some examples to use a MySQL Database
+    https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
+
+    # 6.1.4 Working with Parameters
+    https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
+#>
+
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
 
 class ConnectionDB {
-    <#
-    .SYNOPSIS
-        Represents a connection between Powershell and a MySQL database.
-
-    .DESCRIPTION
-        Mimics (loosely and in a very crud way) the mysqli (PHP) class.
-
-    .PARAMETER MySqlData
-        [String] Complete path to the MySQL Connector .dll file.
-
-    .PARAMETER Server
-        [String] Server name or IP.
-
-    .PARAMETER User
-        [String] The username.
-
-    .PARAMETER Password
-        [String] The password.
-
-    .PARAMETER Database
-        [String] The database name.
-
-    .LINK
-        # Automate MySQL Integration Tasks from PowerShell
-        https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
-
-    .LINK
-        # Powershell: Some examples to use a MySQL Database
-        https://michlstechblog.info/blog/powershell-some-examples-to-use-a-mysql-database/
-
-    .LINK
-        # 6.1.4 Working with Parameters
-        https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
-    #>
 
     [int32]$AffectedRows = 0
     [int32]$InsertId = 0
