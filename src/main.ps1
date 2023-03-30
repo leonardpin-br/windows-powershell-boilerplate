@@ -17,7 +17,7 @@ function Main {
     #>
 
     # Starts clearing the terminal.
-    # Clear-Host
+    Clear-Host
 
     # READ
     # ==========================================================================
@@ -91,8 +91,19 @@ function Main {
     # $Result = [Admins]::FindAll([Admins])
     # Write-Host "After Result"
 
-    $Result = [Admins]::CountAll([Admins])
-    Write-Host "The row count is $($Result)."
+    # $Result = [Admins]::CountAll([Admins])
+    # Write-Host "The row count is $($Result)."
+
+    # $Admin = [Admins]::FindById([Admins], 1)[0]
+
+    # Write-Host "ID: $($Admin.id)"
+    # Write-Host "First name: $($Admin.first_name)"
+    # Write-Host "Last name: $($Admin.last_name)"
+    # Write-Host "Email: $($Admin.email)"
+    # Write-Host "Username: $($Admin.username)"
+    # Write-Host "Hashed password: $($Admin.hashed_password)"
+    # Write-Host "-------------------------------------------`n"
+
 }
 
 Main
