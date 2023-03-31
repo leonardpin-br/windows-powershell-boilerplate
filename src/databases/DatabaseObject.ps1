@@ -190,6 +190,14 @@ class DatabaseObject {
         return $ObjectArray
     }
 
+    [System.Collections.ArrayList]Delete() {
+        $Sql = "DELETE FROM $($this::TableName) "
+        $Sql += "WHERE id='$($this::Database.RealEscapeString($this.id))' "
+        $Sql += "LIMIT 1"
+        $Result = $this::Database.Query($Sql, $true)
+        return $Result
+    }
+
 }
 
 class Admins : DatabaseObject {

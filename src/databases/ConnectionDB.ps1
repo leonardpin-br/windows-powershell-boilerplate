@@ -51,6 +51,7 @@ class ConnectionDB {
             $this.SqlCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
 
             $this.Connection.Open()
+            $this.Connection.Close()
 
         }
 
@@ -82,6 +83,8 @@ class ConnectionDB {
         .SYNOPSIS
             Performs a query on the database.
         #>
+
+        $this.Connection.Open()
 
         # ArrayList that will store the results (one Hashtable for each row).
         $ResultSet = [System.Collections.ArrayList]@()

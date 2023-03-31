@@ -6,6 +6,7 @@
 
 # Importing a script:
 . "$($PSScriptRoot)\..\config\Initialize.ps1"
+# . "$($PSScriptRoot)\..\src\databases\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\src\databases\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\..\src\databases\DatabaseObject.ps1"
 
@@ -40,11 +41,12 @@ function Main {
 
 #     # CREATE
 #     # ==========================================================================
-#     $ConnectionDb = [ConnectionDB]::new()
-#     $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
-#     $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
+        # $ConnectionDb = [ConnectionDB]::new()
+        # $ConnectionDb = [ConnectionDB]::new("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll", "localhost", "webuser", "secretpassword", "chain_gang")
+        # $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
+        # $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
 
-#     $ResultSet = $ConnectionDb.Query($Sql, $True)
+        # $ResultSet = $ConnectionDb.Query($Sql, $True)
 
 #     # UPDATE
 #     # ==========================================================================
@@ -103,6 +105,14 @@ function Main {
     # Write-Host "Username: $($Admin.username)"
     # Write-Host "Hashed password: $($Admin.hashed_password)"
     # Write-Host "-------------------------------------------`n"
+
+    # DELETE
+    # --------------------------------------------------------------------------
+    # Used only to open the connection.
+    $ConnectionDb = [ConnectionDB]::new("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll", "localhost", "webuser", "secretpassword", "chain_gang")
+    $Admin = [Admins]::FindById([Admins], 23)[0]
+    $Admin.Delete()
+    Write-Host "Admin successfully deleted."
 
 }
 
