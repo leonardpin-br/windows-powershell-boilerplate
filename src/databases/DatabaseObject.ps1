@@ -191,6 +191,22 @@ class DatabaseObject {
     }
 
     [System.Collections.ArrayList]Delete() {
+        <#
+        .SYNOPSIS
+            Deletes, in the database, the record that corresponds to the current
+            instance object in memory.
+        .DESCRIPTION
+            After deleting, the instance object will still
+            exist, even though the database record does not.
+            This can be useful, as in the example below.
+        .OUTPUTS
+            An empty ArrayList.
+        .EXAMPLE
+            $Admin = [Admins]::FindById([Admins], 24)[0]
+            $Admin.Delete()
+            Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+        #>
+
         $Sql = "DELETE FROM $($this::TableName) "
         $Sql += "WHERE id='$($this::Database.RealEscapeString($this.id))' "
         $Sql += "LIMIT 1"

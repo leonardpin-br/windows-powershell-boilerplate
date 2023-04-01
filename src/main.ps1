@@ -109,10 +109,10 @@ function Main {
     # DELETE
     # --------------------------------------------------------------------------
     # Used only to open the connection.
-    $ConnectionDb = [ConnectionDB]::new("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll", "localhost", "webuser", "secretpassword", "chain_gang")
-    $Admin = [Admins]::FindById([Admins], 23)[0]
+    # $ConnectionDb = [ConnectionDB]::new("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll", "localhost", "webuser", "secretpassword", "chain_gang")
+    $Admin = [Admins]::FindById([Admins], 24)[0]
     $Admin.Delete()
-    Write-Host "Admin successfully deleted."
+    Write-Host "Admin '$($Admin.first_name)' successfully deleted."
 
 }
 
