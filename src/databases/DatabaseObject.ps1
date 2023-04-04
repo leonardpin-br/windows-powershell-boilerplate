@@ -190,6 +190,21 @@ class DatabaseObject {
         return $ObjectArray
     }
 
+    hidden [System.Collections.ArrayList]Validate() {
+        <#
+        .SYNOPSIS
+            Every class that extends this one (DatabaseObject) must implement this method.
+        .OUTPUTS
+            The errors string ArrayList.
+        .NOTES
+            Information or caveats about the function e.g. 'This function is not supported in Linux'
+        #>
+
+        $this.Errors = [System.Collections.ArrayList]@()
+
+        return $this.Errors
+    }
+
     [System.Collections.ArrayList]Delete() {
         <#
         .SYNOPSIS
