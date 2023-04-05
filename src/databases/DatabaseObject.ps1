@@ -25,8 +25,8 @@ class DatabaseObject {
 
     # [ConnectionDB] object that will store the connection.
     hidden static $Database
-    hidden static $TableName
-    hidden static $Columns
+    hidden static [string]$TableName = ""
+    hidden static $Columns = [System.Collections.ArrayList]@()
     $Errors = [System.Collections.ArrayList]@()
 
     # Makes this class abstract.
@@ -203,6 +203,29 @@ class DatabaseObject {
         $this.Errors = [System.Collections.ArrayList]@()
 
         return $this.Errors
+    }
+
+    # TODO
+    # Continue...
+    hidden [System.Collections.ArrayList]Create() {
+        $this.Validate()
+        if(-not $this.Errors) {
+            return [System.Collections.ArrayList]@()
+        }
+
+
+    }
+
+    hidden [System.Collections.ArrayList]Update() {}
+
+    [System.Collections.ArrayList]Save() {
+        # A new record will not have an ID yet.
+        if(Is-Set -Variable $this.id) {
+            return $this.Update()
+        }
+        else {
+            return $this.Create()
+        }
     }
 
     [System.Collections.ArrayList]Delete() {
