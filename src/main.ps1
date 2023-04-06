@@ -120,9 +120,36 @@ function Main {
 
     # SANITIZEDATTRIBUTES TEST
     # --------------------------------------------------------------------------
+    # $Admin = [Admins]::FindById([Admins], 12)[0]
+    # $Result = $Admin.SanitizedAttributes([Admins])
+    # Write-Host "The result is '$($Result)'."
+
+    # MERGEATTRIBUTES TEST
+    # --------------------------------------------------------------------------
     $Admin = [Admins]::FindById([Admins], 12)[0]
-    $Result = $Admin.SanitizedAttributes([Admins])
-    Write-Host "The result is '$($Result)'."
+    if($Admin) {
+        [System.Collections.Hashtable]$Kwargs = @{
+            # "id" = $null;
+            "id" = $Admin.id;
+            "first_name" = $Admin.first_name;
+            "last_name" = $Admin.last_name;
+            "email" = $Admin.email;
+            "username" = $Admin.username;
+            "hashed_password" = $Admin.hashed_password;
+        }
+
+        $Admin.MergeAttributes($Kwargs)
+        $Result = $Admin.Update()
+        if($Result) {
+            Write-Host "The admin was updated."
+        }
+        else {
+            Write-Host "There was an error in the update process."
+        }
+    }
+    else {
+        Write-Host "The ID was not found."
+    }
 
 }
 

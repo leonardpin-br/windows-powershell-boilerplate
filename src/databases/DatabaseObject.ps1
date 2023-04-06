@@ -20,6 +20,7 @@
 . "$($PSScriptRoot)\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
+. "$($PSScriptRoot)\..\shared\ValidationFunctions.ps1"
 
 class DatabaseObject {
 
@@ -244,6 +245,51 @@ class DatabaseObject {
         else {
             return $this.Create()
         }
+    }
+
+    [void]MergeAttributes([System.Collections.Hashtable]$Arguments) {
+        <#
+        .SYNOPSIS
+            Merges the attributes from the given Hashtable into the object in
+            memory created from the FindById() method.
+        .PARAMETER [System.Collections.Hashtable]$Arguments
+            The Hashtable containing the new values to be merged and later updated.
+        .EXAMPLE
+            $Admin = [Admins]::FindById([Admins], 12)[0]
+            if($Admin) {
+                [System.Collections.Hashtable]$Kwargs = @{
+                    # "id" = $null;
+                    "id" = $Admin.id;
+                    "first_name" = $Admin.first_name;
+                    "last_name" = $Admin.last_name;
+                    "email" = $Admin.email;
+                    "username" = $Admin.username;
+                    "hashed_password" = $Admin.hashed_password;
+                }
+
+                $Admin.MergeAttributes($Kwargs)
+                $Result = $Admin.Update()
+                if($Result) {
+                    Write-Host "The admin was updated."
+                }
+                else {
+                    Write-Host "There was an error in the update process."
+                }
+            }
+            else {
+                Write-Host "The ID was not found."
+            }
+        #>
+
+        foreach($Key in $Arguments.Keys) {
+            if (
+                (Get-Member -inputobject $this -name $Key -Membertype Properties) -and
+                -not (Is-Null($Arguments[$Key]))
+                ) {
+                $this.$Key = $Arguments[$Key]
+            }
+        }
+
     }
 
     [System.Collections.Hashtable]Attributes([type]$TargetType) {
