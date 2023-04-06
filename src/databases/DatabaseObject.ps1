@@ -214,9 +214,27 @@ class DatabaseObject {
         }
 
 
+
+
+
+
+
+
+        return [System.Collections.ArrayList]@()
     }
 
-    hidden [System.Collections.ArrayList]Update() {}
+    hidden [System.Collections.ArrayList]Update() {
+
+
+
+
+
+
+
+
+
+        return [System.Collections.ArrayList]@()
+    }
 
     [System.Collections.ArrayList]Save() {
         # A new record will not have an ID yet.
@@ -228,9 +246,20 @@ class DatabaseObject {
         }
     }
 
-    [System.Collections.ArrayList]Attributes([type]$TargetType) {
+    [System.Collections.Hashtable]Attributes([type]$TargetType) {
+        <#
+        .SYNOPSIS
+            Creates a Hashtable that has, as properties, the database columns
+            (excluding ID) and the corresponding values from the instance object
+            in memory.
+        .PARAMETER [type]$TargetType
+            The class itself.
+        .OUTPUTS
+            Hashtable containing the names of the columns and the
+            corresponding values from the instance object in memory.
+        #>
 
-        $Attributes = [System.Collections.ArrayList]@()
+        [System.Collections.Hashtable]$Attributes = @{}
 
         foreach ($Column in $TargetType::DbColumns) {
             if($Column -eq 'id') {
@@ -240,6 +269,26 @@ class DatabaseObject {
         }
 
         return $Attributes
+
+    }
+
+    hidden [System.Collections.Hashtable]SanitizedAttributes([type]$TargetType) {
+        <#
+        .SYNOPSIS
+            Sanitizes (escapes the values) of the object before sending to the database.
+        .PARAMETER [type]$TargetType
+            The class itself.
+        .OUTPUTS
+            Hashtable with the values escaped.
+        #>
+
+        [System.Collections.Hashtable]$Sanitized = @{}
+
+        $this.Attributes($TargetType).GetEnumerator() | ForEach-Object {
+            $Sanitized[$_.Key] = $TargetType::Database.RealEscapeString($_.Value)
+        }
+
+        return $Sanitized
 
     }
 

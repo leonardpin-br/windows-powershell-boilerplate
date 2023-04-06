@@ -108,11 +108,21 @@ function Main {
 
     # DELETE
     # --------------------------------------------------------------------------
-    # Used only to open the connection.
-    # $ConnectionDb = [ConnectionDB]::new("C:\Program Files (x86)\MySQL\MySQL Connector NET 8.0.32\Assemblies\net7.0\MySql.Data.dll", "localhost", "webuser", "secretpassword", "chain_gang")
-    $Admin = [Admins]::FindById([Admins], 24)[0]
-    $Admin.Delete()
-    Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+    # $Admin = [Admins]::FindById([Admins], 24)[0]
+    # $Admin.Delete()
+    # Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+
+    # ATTRIBUTES TEST
+    # --------------------------------------------------------------------------
+    # $Admin = [Admins]::FindById([Admins], 12)[0]
+    # $Result = $Admin.Attributes([Admins])
+    # Write-Host "The result is '$($Result)'."
+
+    # SANITIZEDATTRIBUTES TEST
+    # --------------------------------------------------------------------------
+    $Admin = [Admins]::FindById([Admins], 12)[0]
+    $Result = $Admin.SanitizedAttributes([Admins])
+    Write-Host "The result is '$($Result)'."
 
 }
 
