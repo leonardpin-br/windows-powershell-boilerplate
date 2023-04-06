@@ -26,7 +26,7 @@ class DatabaseObject {
     # [ConnectionDB] object that will store the connection.
     hidden static $Database
     hidden static [string]$TableName = ""
-    hidden static $Columns = [System.Collections.ArrayList]@()
+    hidden static $DbColumns = [System.Collections.ArrayList]@()
     $Errors = [System.Collections.ArrayList]@()
 
     # Makes this class abstract.
@@ -228,6 +228,21 @@ class DatabaseObject {
         }
     }
 
+    [System.Collections.ArrayList]Attributes([type]$TargetType) {
+
+        $Attributes = [System.Collections.ArrayList]@()
+
+        foreach ($Column in $TargetType::DbColumns) {
+            if($Column -eq 'id') {
+                continue
+            }
+            $Attributes[$Column] = $this.$Column
+        }
+
+        return $Attributes
+
+    }
+
     [System.Collections.ArrayList]Delete() {
         <#
         .SYNOPSIS
@@ -256,7 +271,7 @@ class DatabaseObject {
 
 class Admins : DatabaseObject {
     hidden static $TableName = "admins"
-    hidden static $DBColumns = [System.Collections.ArrayList]@(
+    hidden static $DbColumns = [System.Collections.ArrayList]@(
         'id',
         'first_name',
         'last_name',
@@ -297,18 +312,3 @@ class Admins : DatabaseObject {
     }
 
 }
-
-# function Main {
-#     Clear-Host
-
-#     # $admin = [Admins]::new()
-#     # Write-Host $admin.Name
-
-#     $Database = [ConnectionDB]::new()
-#     $database = [DatabaseObject]::SetDatabase($Database)
-#     $SuperclassDatabase = [DatabaseObject]::Database
-#     $SubclassDatabase = [Admins]::Database
-#     Write-Host "Test"
-# }
-
-# Main
