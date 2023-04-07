@@ -131,7 +131,7 @@ class DatabaseObject {
         #>
 
         $Sql = "SELECT COUNT(*) FROM $($TargetType::TableName)"
-        $ResultSet = $TargetType::Database.Query($Sql, $null)
+        $ResultSet = $TargetType::Database.Query($Sql, $false)
         $Row = $ResultSet[0]
         $Value = $Row["COUNT(*)"]
 
@@ -246,6 +246,7 @@ class DatabaseObject {
         }
 
         return $Result
+
     }
 
     hidden [bool]Update() {

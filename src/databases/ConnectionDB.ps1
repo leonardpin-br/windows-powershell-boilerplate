@@ -82,6 +82,29 @@ class ConnectionDB {
         <#
         .SYNOPSIS
             Performs a query on the database.
+        .PARAMETER [String]$Sql
+            The query to be executed.
+        .PARAMETER [Boolean]$IsDataChange
+            $true, if it is going to change data. $false otherwise.
+        .OUTPUTS
+            Returns $false on failure.
+            For successful queries which produce a result set, such as SELECT,
+            SHOW, DESCRIBE or EXPLAIN, will return an ArrayList with all records
+            as Hashtables.
+            For other successful queries, will return $true.
+        .EXAMPLE
+            # Example 1:
+            [System.Collections.ArrayList]$ResultSet = $TargetType::Database.Query($Sql, $false)
+            if ($ResultSet[0] -eq $false) { ... }
+
+            # Example 2:
+            $ResultSet = $TargetType::Database.Query($Sql, $false)
+
+            # Example 3:
+            $Result = $this.GetType()::Database.Query($Sql, $true)[0]
+
+            # Example 4:
+            [bool]$Result = $this::Database.Query($Sql, $true)[0]
         #>
 
         # ArrayList that will store the results (one Hashtable for each row).
@@ -111,6 +134,10 @@ class ConnectionDB {
 
                 if ($this.AffectedRows -ne 0) {
                     $NonQueryResult = $true
+                    $ResultSet.Add($NonQueryResult)
+                }
+                else {
+                    $NonQueryResult = $false
                     $ResultSet.Add($NonQueryResult)
                 }
 
