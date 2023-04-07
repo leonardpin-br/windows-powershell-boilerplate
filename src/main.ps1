@@ -5,6 +5,7 @@
 # https://poshcode.gitbook.io/powershell-practice-and-style/style-guide/code-layout-and-formatting#Capitalization-Conventions
 
 # Importing a script:
+. "$($PSScriptRoot)\shared\Functions.ps1"
 . "$($PSScriptRoot)\..\config\Initialize.ps1"
 # . "$($PSScriptRoot)\..\src\databases\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\src\databases\DatabaseFunctions.ps1"
@@ -126,49 +127,49 @@ function Main {
 
     # MERGEATTRIBUTES TEST
     # --------------------------------------------------------------------------
-    # $Admin = [Admins]::FindById([Admins], 12)[0]
-    # if($Admin) {
-    #     [System.Collections.Hashtable]$Kwargs = @{
-    #         # "id" = $null;
-    #         "id" = $Admin.id;
-    #         "first_name" = $Admin.first_name;
-    #         "last_name" = $Admin.last_name;
-    #         "email" = $Admin.email;
-    #         "username" = $Admin.username;
-    #         "hashed_password" = $Admin.hashed_password;
-    #     }
+    $Admin = [Admins]::FindById([Admins], 120)[0]
+    if($Admin) {
+        [System.Collections.Hashtable]$Kwargs = @{
+            # "id" = $null;
+            "id" = $Admin.id;
+            "first_name" = $Admin.first_name;
+            "last_name" = $Admin.last_name;
+            "email" = $Admin.email;
+            "username" = $Admin.username;
+            "hashed_password" = $Admin.hashed_password;
+        }
 
-    #     $Admin.MergeAttributes($Kwargs)
-    #     $Result = $Admin.Update()
-    #     if($Result) {
-    #         Write-Host "The admin was updated."
-    #     }
-    #     else {
-    #         Write-Host "There was an error in the update process."
-    #     }
-    # }
-    # else {
-    #     Write-Host "The ID was not found."
-    # }
+        $Admin.MergeAttributes($Kwargs)
+        $Result = $Admin.Update()
+        if($Result) {
+            Write-Host "The admin was updated."
+        }
+        else {
+            Write-Host "There was an error in the update process."
+        }
+    }
+    else {
+        PrintErrorMessage -ErrorMessage "The ID was not found."
+    }
 
     # CREATE TEST
     # --------------------------------------------------------------------------
-    [System.Collections.Hashtable]$Properties = @{
-        first_name = "Leonardo";
-        last_name = "Pinheiro";
-        email = "info@leonardopinheiro.net";
-        username = "leo";
-        password = "secretpassword";
-        confirm_password = "secretpassword";
-    }
+    # [System.Collections.Hashtable]$Properties = @{
+    #     first_name = "Leonardo";
+    #     last_name = "Pinheiro";
+    #     email = "info@leonardopinheiro.net";
+    #     username = "leo";
+    #     password = "secretpassword";
+    #     confirm_password = "secretpassword";
+    # }
 
-    # Creates an object in memory.
-    $Admin = [Admins]::new($Properties)
-    $Admin.hashed_password = "zzzzzzzzzz"
+    # # Creates an object in memory.
+    # $Admin = [Admins]::new($Properties)
+    # $Admin.hashed_password = "zzzzzzzzzz"
 
-    # Saves the object in memory in the database.
-    $Admin.Save()
-    Write-Host "Object saved."
+    # # Saves the object in memory in the database.
+    # $Admin.Save()
+    # Write-Host "Object saved."
 
 }
 

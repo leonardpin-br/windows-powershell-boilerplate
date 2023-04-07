@@ -85,8 +85,8 @@ class ConnectionDB {
         #>
 
         # ArrayList that will store the results (one Hashtable for each row).
-        $ResultSet = [System.Collections.ArrayList]@()
-        $Record = [System.Collections.Hashtable]@{}
+        [System.Collections.ArrayList]$ResultSet = @()
+        [System.Collections.Hashtable]$Record = @{}
 
         $this.Connection.Open()
 
@@ -122,6 +122,11 @@ class ConnectionDB {
 
                 # Fills the $DataTable with the result set.
                 $DataAdapter.Fill($DataTable)
+
+                # If the query was unsuccessful, returns the empty ArrayList.
+                if ($DataTable.Rows.Count -eq 0) {
+                    return $ResultSet
+                }
 
                 # Fills the hashtable.
                 for ($i = 0; $i -lt $DataTable.Rows.Count; $i++) {

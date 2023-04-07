@@ -76,11 +76,13 @@ class DatabaseObject {
             Throws if the query does not bring back any result.
         #>
 
-        $Result = $TargetType::Database.Query($Sql, $false)
+        [System.Collections.ArrayList]$Result = $TargetType::Database.Query($Sql, $false)
         if (-not $Result) {
             $ErrorMessage = "Database query failed."
             PrintErrorMessage -ErrorMessage $ErrorMessage
-            throw $ErrorMessage
+
+            # If the query was unsuccessful, returns the empty ArrayList.
+            return $Result
         }
 
         # Results into objects
