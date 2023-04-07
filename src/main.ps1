@@ -109,9 +109,11 @@ function Main {
 
     # DELETE
     # --------------------------------------------------------------------------
-    # $Admin = [Admins]::FindById([Admins], 24)[0]
-    # $Admin.Delete()
-    # Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+    # $Admin = [Admins]::FindById([Admins], 27)[0]
+    # $Result = $Admin.Delete()
+    # if ($Result) {
+    #     PrintSuccessMessage -SuccessMessage "The Admin '$($Admin.first_name)' was successfully deleted."
+    # }
 
     # ATTRIBUTES TEST
     # --------------------------------------------------------------------------
@@ -127,30 +129,30 @@ function Main {
 
     # MERGEATTRIBUTES TEST
     # --------------------------------------------------------------------------
-    $Admin = [Admins]::FindById([Admins], 120)[0]
-    if($Admin) {
-        [System.Collections.Hashtable]$Kwargs = @{
-            # "id" = $null;
-            "id" = $Admin.id;
-            "first_name" = $Admin.first_name;
-            "last_name" = $Admin.last_name;
-            "email" = $Admin.email;
-            "username" = $Admin.username;
-            "hashed_password" = $Admin.hashed_password;
-        }
+    # $Admin = [Admins]::FindById([Admins], 12)[0]
+    # if($Admin) {
+    #     [System.Collections.Hashtable]$Kwargs = @{
+    #         # "id" = $null;
+    #         "id" = $Admin.id;
+    #         "first_name" = $Admin.first_name;
+    #         "last_name" = $Admin.last_name;
+    #         "email" = $Admin.email;
+    #         "username" = $Admin.username;
+    #         "hashed_password" = $Admin.hashed_password;
+    #     }
 
-        $Admin.MergeAttributes($Kwargs)
-        $Result = $Admin.Update()
-        if($Result) {
-            Write-Host "The admin was updated."
-        }
-        else {
-            Write-Host "There was an error in the update process."
-        }
-    }
-    else {
-        PrintErrorMessage -ErrorMessage "The ID was not found."
-    }
+    #     $Admin.MergeAttributes($Kwargs)
+    #     $Result = $Admin.Update()
+    #     if($Result) {
+    #         PrintSuccessMessage -SuccessMessage "The admin was updated."
+    #     }
+    #     else {
+    #         PrintErrorMessage -ErrorMessage "There was an error in the update process."
+    #     }
+    # }
+    # else {
+    #     PrintErrorMessage -ErrorMessage "The ID was not found."
+    # }
 
     # CREATE TEST
     # --------------------------------------------------------------------------
@@ -168,8 +170,23 @@ function Main {
     # $Admin.hashed_password = "zzzzzzzzzz"
 
     # # Saves the object in memory in the database.
-    # $Admin.Save()
-    # Write-Host "Object saved."
+    # $Result = $Admin.Save()
+    # if (-not $Result) {
+    #     PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+    # }
+    # else {
+    #     PrintSuccessMessage -SuccessMessage "Object saved."
+    # }
+
+    # FINDBYID TEST
+    # --------------------------------------------------------------------------
+    $Admin = [Admins]::FindById([Admins], 1000)[0]
+    if ($Admin) {
+        PrintSuccessMessage -SuccessMessage "The admin '$($Admin.first_name)' was found."
+    }
+    else {
+        PrintErrorMessage -ErrorMessage "The ID was not found."
+    }
 
 }
 

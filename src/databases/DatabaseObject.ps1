@@ -76,21 +76,21 @@ class DatabaseObject {
             Throws if the query does not bring back any result.
         #>
 
-        [System.Collections.ArrayList]$Result = $TargetType::Database.Query($Sql, $false)
-        if (-not $Result) {
+        [System.Collections.ArrayList]$ResultSet = $TargetType::Database.Query($Sql, $false)
+        if ($ResultSet[0] -eq $false) {
             $ErrorMessage = "Database query failed."
             PrintErrorMessage -ErrorMessage $ErrorMessage
 
-            # If the query was unsuccessful, returns the empty ArrayList.
-            return $Result
+            # If the query was unsuccessful, returns the ArrayList with $false in it.
+            return $ResultSet
         }
 
         # Results into objects
         $ObjectArray = [System.Collections.ArrayList]@()
         $NewInstance = $null
 
-        for ($i = 0; $i -lt $Result.Count; $i++) {
-            $NewInstance = $TargetType::Instantiate($TargetType, $Result[$i])[0]
+        for ($i = 0; $i -lt $ResultSet.Count; $i++) {
+            $NewInstance = $TargetType::Instantiate($TargetType, $ResultSet[$i])[0]
             $ObjectArray.Add( $NewInstance )
         }
 
@@ -149,14 +149,24 @@ class DatabaseObject {
         .OUTPUTS
             An ArrayList containing one object corresponding to the database record.
         .EXAMPLE
-            $Admin = [Admins]::FindById([Admins], 1)[0]
-            Write-Host "ID: $($Admin.id)"
-            Write-Host "First name: $($Admin.first_name)"
+            $Admin = [Admins]::FindById([Admins], 1000)[0]
+            if ($Admin) {
+                PrintSuccessMessage -SuccessMessage "The admin '$($Admin.first_name)' was found."
+            }
+            else {
+                PrintErrorMessage -ErrorMessage "The ID was not found."
+            }
         #>
 
         $Sql = "SELECT * FROM $($TargetType::TableName) "
         $Sql += "WHERE id='$($TargetType::Database.RealEscapeString($Id))'"
         $ObjectArray = $TargetType::FindBySql($TargetType, $Sql)
+
+        # If the query was unsuccessful.
+        if ($ObjectArray[0] -eq $false) {
+            $ReturnValue = $null
+            $ObjectArray[0] = $ReturnValue
+        }
 
         return $ObjectArray
 
@@ -208,14 +218,15 @@ class DatabaseObject {
         return $this.Errors
     }
 
-    hidden [System.Collections.ArrayList]Create() {
+    hidden [bool]Create() {
 
 
-        [System.Collections.ArrayList]$Result = @()
+        [bool]$Result = $false
 
         $this.Validate()
         if($this.Errors.count -ne 0) {
-            return $Result.Add($false)
+            # If there are any errors, returns the ($false) $Result.
+            return $Result
         }
 
         $Attributes = $this.SanitizedAttributes()
@@ -228,20 +239,16 @@ class DatabaseObject {
         $Sql = $Sql -replace ", '$"
         $Sql += ")"
 
-        $Result = $this.GetType()::Database.Query($Sql, $true)
+        $Result = $this.GetType()::Database.Query($Sql, $true)[0]
 
+        if ($Result) {
+            $this.id = $this.GetType()::Database.InsertId
+        }
 
-
-
-        # TODO
-        # Finish
-
-
-
-        return [System.Collections.ArrayList]@()
+        return $Result
     }
 
-    hidden [System.Collections.ArrayList]Update() {
+    hidden [bool]Update() {
 
 
 
@@ -254,7 +261,7 @@ class DatabaseObject {
         return [System.Collections.ArrayList]@()
     }
 
-    [System.Collections.ArrayList]Save() {
+    [bool]Save() {
         # A new record will not have an ID yet.
         if(Is-Set -Variable $this.id) {
             return $this.Update()
@@ -355,7 +362,7 @@ class DatabaseObject {
 
     }
 
-    [System.Collections.ArrayList]Delete() {
+    [bool]Delete() {
         <#
         .SYNOPSIS
             Deletes, in the database, the record that corresponds to the current
@@ -367,15 +374,17 @@ class DatabaseObject {
         .OUTPUTS
             An empty ArrayList.
         .EXAMPLE
-            $Admin = [Admins]::FindById([Admins], 24)[0]
-            $Admin.Delete()
-            Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+            $Admin = [Admins]::FindById([Admins], 26)[0]
+            $Result = $Admin.Delete()
+            if ($Result) {
+                PrintSuccessMessage -SuccessMessage "The Admin '$($Admin.first_name)' was successfully deleted."
+            }
         #>
 
         $Sql = "DELETE FROM $($this::TableName) "
         $Sql += "WHERE id='$($this::Database.RealEscapeString($this.id))' "
         $Sql += "LIMIT 1"
-        $Result = $this::Database.Query($Sql, $true)
+        [bool]$Result = $this::Database.Query($Sql, $true)[0]
         return $Result
     }
 

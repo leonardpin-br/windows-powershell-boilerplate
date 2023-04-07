@@ -109,6 +109,11 @@ class ConnectionDB {
                 $this.AffectedRows = $this.SqlCommand.ExecuteNonQuery()
                 $this.InsertId = $this.SqlCommand.LastInsertedId
 
+                if ($this.AffectedRows -ne 0) {
+                    $NonQueryResult = $true
+                    $ResultSet.Add($NonQueryResult)
+                }
+
             }
 
             # READ (CRUD)
@@ -123,8 +128,10 @@ class ConnectionDB {
                 # Fills the $DataTable with the result set.
                 $DataAdapter.Fill($DataTable)
 
-                # If the query was unsuccessful, returns the empty ArrayList.
+                # If the query was unsuccessful, returns the ArrayList with $false in it.
                 if ($DataTable.Rows.Count -eq 0) {
+                    $QueryResult = $false
+                    $ResultSet.Add($QueryResult)
                     return $ResultSet
                 }
 
