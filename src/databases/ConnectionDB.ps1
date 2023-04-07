@@ -84,11 +84,11 @@ class ConnectionDB {
             Performs a query on the database.
         #>
 
-        $this.Connection.Open()
-
         # ArrayList that will store the results (one Hashtable for each row).
         $ResultSet = [System.Collections.ArrayList]@()
         $Record = [System.Collections.Hashtable]@{}
+
+        $this.Connection.Open()
 
         if ($this.Connection.State -ne "Open") {
 
@@ -99,7 +99,6 @@ class ConnectionDB {
         }
 
         try {
-
 
             # CREATE, UPDATE or DELETE (CRUD)
             if ($IsDataChange) {

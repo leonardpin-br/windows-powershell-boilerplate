@@ -27,8 +27,8 @@ class DatabaseObject {
     # [ConnectionDB] object that will store the connection.
     hidden static $Database
     hidden static [string]$TableName = ""
-    hidden static $DbColumns = [System.Collections.ArrayList]@()
-    $Errors = [System.Collections.ArrayList]@()
+    hidden static [System.Collections.ArrayList]$DbColumns = @()
+    [System.Collections.ArrayList]$Errors = @()
 
     # Makes this class abstract.
     DatabaseObject() {
@@ -206,18 +206,33 @@ class DatabaseObject {
         return $this.Errors
     }
 
-    # TODO
-    # Continue...
     hidden [System.Collections.ArrayList]Create() {
+
+
+        [System.Collections.ArrayList]$Result = @()
+
         $this.Validate()
-        if(-not $this.Errors) {
-            return [System.Collections.ArrayList]@()
+        if($this.Errors.count -ne 0) {
+            return $Result.Add($false)
         }
 
+        $Attributes = $this.SanitizedAttributes()
+
+        $Sql = "INSERT INTO $($this.GetType()::TableName) ("
+        ForEach ($Key in $Attributes.Keys) {$Sql += "$($Key), "}
+        $Sql = $Sql -replace ", $"
+        $Sql += ") VALUES ('"
+        ForEach ($Value in $Attributes.Values) {$Sql += "$($Value)', '"}
+        $Sql = $Sql -replace ", '$"
+        $Sql += ")"
+
+        $Result = $this.GetType()::Database.Query($Sql, $true)
 
 
 
 
+        # TODO
+        # Finish
 
 
 
@@ -292,7 +307,7 @@ class DatabaseObject {
 
     }
 
-    [System.Collections.Hashtable]Attributes([type]$TargetType) {
+    [System.Collections.Hashtable]Attributes() {
         <#
         .SYNOPSIS
             Creates a Hashtable that has, as properties, the database columns
@@ -307,7 +322,7 @@ class DatabaseObject {
 
         [System.Collections.Hashtable]$Attributes = @{}
 
-        foreach ($Column in $TargetType::DbColumns) {
+        foreach ($Column in $this.GetType()::DbColumns) {
             if($Column -eq 'id') {
                 continue
             }
@@ -318,7 +333,7 @@ class DatabaseObject {
 
     }
 
-    hidden [System.Collections.Hashtable]SanitizedAttributes([type]$TargetType) {
+    hidden [System.Collections.Hashtable]SanitizedAttributes() {
         <#
         .SYNOPSIS
             Sanitizes (escapes the values) of the object before sending to the database.
@@ -330,8 +345,8 @@ class DatabaseObject {
 
         [System.Collections.Hashtable]$Sanitized = @{}
 
-        $this.Attributes($TargetType).GetEnumerator() | ForEach-Object {
-            $Sanitized[$_.Key] = $TargetType::Database.RealEscapeString($_.Value)
+        $this.Attributes().GetEnumerator() | ForEach-Object {
+            $Sanitized[$_.Key] = $this.GetType()::Database.RealEscapeString($_.Value)
         }
 
         return $Sanitized
