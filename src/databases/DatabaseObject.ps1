@@ -219,7 +219,14 @@ class DatabaseObject {
     }
 
     hidden [bool]Create() {
-
+        <#
+        .SYNOPSIS
+            Creates a record in the database with the properties' values of the
+            current instance in memory.
+        .OUTPUTS
+            The result of the Query() method executed inside this method. It is
+            always an ArrayList. Inside it, $false | $true | @( @{} ).
+        #>
 
         [bool]$Result = $false
 

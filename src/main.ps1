@@ -156,37 +156,37 @@ function Main {
 
     # CREATE TEST
     # --------------------------------------------------------------------------
-    # [System.Collections.Hashtable]$Properties = @{
-    #     first_name = "Leonardo";
-    #     last_name = "Pinheiro";
-    #     email = "info@leonardopinheiro.net";
-    #     username = "leo";
-    #     password = "secretpassword";
-    #     confirm_password = "secretpassword";
-    # }
+    [System.Collections.Hashtable]$Properties = @{
+        first_name = "Leonardo";
+        last_name = "Pinheiro";
+        email = "info@leonardopinheiro.net";
+        username = "leo";
+        password = "secretpassword";
+        confirm_password = "secretpassword";
+    }
 
-    # # Creates an object in memory.
-    # $Admin = [Admins]::new($Properties)
-    # $Admin.hashed_password = "zzzzzzzzzz"
+    # Creates an object in memory.
+    $Admin = [Admins]::new($Properties)
+    $Admin.hashed_password = "zzzzzzzzzz"
 
-    # # Saves the object in memory in the database.
-    # $Result = $Admin.Save()
-    # if (-not $Result) {
-    #     PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
-    # }
-    # else {
-    #     PrintSuccessMessage -SuccessMessage "Object saved."
-    # }
+    # Saves the object in memory in the database.
+    $Result = $Admin.Save()
+    if (-not $Result) {
+        PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+    }
+    else {
+        PrintSuccessMessage -SuccessMessage "Object saved."
+    }
 
     # FINDBYID TEST
     # --------------------------------------------------------------------------
-    $Admin = [Admins]::FindById([Admins], 1000)[0]
-    if ($Admin) {
-        PrintSuccessMessage -SuccessMessage "The admin '$($Admin.first_name)' was found."
-    }
-    else {
-        PrintErrorMessage -ErrorMessage "The ID was not found."
-    }
+    # $Admin = [Admins]::FindById([Admins], 1000)[0]
+    # if ($Admin) {
+    #     PrintSuccessMessage -SuccessMessage "The admin '$($Admin.first_name)' was found."
+    # }
+    # else {
+    #     PrintErrorMessage -ErrorMessage "The ID was not found."
+    # }
 
 }
 
