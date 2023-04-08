@@ -156,27 +156,27 @@ function Main {
 
     # CREATE TEST
     # --------------------------------------------------------------------------
-    [System.Collections.Hashtable]$Properties = @{
-        first_name = "Leonardo";
-        last_name = "Pinheiro";
-        email = "info@leonardopinheiro.net";
-        username = "leo";
-        password = "secretpassword";
-        confirm_password = "secretpassword";
-    }
+    # [System.Collections.Hashtable]$Properties = @{
+    #     first_name = "Leonardo";
+    #     last_name = "Pinheiro";
+    #     email = "info@leonardopinheiro.net";
+    #     username = "leo";
+    #     password = "secretpassword";
+    #     confirm_password = "secretpassword";
+    # }
 
-    # Creates an object in memory.
-    $Admin = [Admins]::new($Properties)
-    $Admin.hashed_password = "zzzzzzzzzz"
+    # # Creates an object in memory.
+    # $Admin = [Admins]::new($Properties)
+    # $Admin.hashed_password = "zzzzzzzzzz"
 
-    # Saves the object in memory in the database.
-    $Result = $Admin.Save()
-    if (-not $Result) {
-        PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
-    }
-    else {
-        PrintSuccessMessage -SuccessMessage "Object saved."
-    }
+    # # Saves the object in memory in the database.
+    # $Result = $Admin.Save()
+    # if (-not $Result) {
+    #     PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+    # }
+    # else {
+    #     PrintSuccessMessage -SuccessMessage "Object saved."
+    # }
 
     # FINDBYID TEST
     # --------------------------------------------------------------------------
@@ -187,6 +187,31 @@ function Main {
     # else {
     #     PrintErrorMessage -ErrorMessage "The ID was not found."
     # }
+
+    # UPDATE TEST
+    # --------------------------------------------------------------------------
+    $Admin = [Admins]::FindById([Admins], 28)[0]
+    if ($Admin) {
+        $Admin.first_name = "Leonardo";
+        $Admin.last_name = "Pinheiro";
+        $Admin.email = "info@leonardopinheiro.net";
+        $Admin.username = "leo";
+        $Admin.password = "secretpassword";
+        $Admin.confirm_password = "secretpassword";
+
+        # Saves the object in memory in the database.
+        [bool]$Result = $Admin.Save()
+        if (-not $Result) {
+            PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+        }
+        else {
+            PrintSuccessMessage -SuccessMessage "Object saved."
+        }
+    }
+    else {
+        PrintErrorMessage -ErrorMessage "The ID was not found."
+    }
+
 
 }
 

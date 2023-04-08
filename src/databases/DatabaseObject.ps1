@@ -257,16 +257,57 @@ class DatabaseObject {
     }
 
     hidden [bool]Update() {
+        <#
+        .SYNOPSIS
+            Updates the database with the properties' values of the current
+            instance in memory.
+        .OUTPUTS
+            The result of the Query() method executed inside this method.
+            $true if the update is successful. $false otherwise.
+        .EXAMPLE
+            $Admin = [Admins]::FindById([Admins], 28)[0]
+            if ($Admin) {
+                $Admin.first_name = "Leonardo";
+                $Admin.last_name = "Pinheiro";
+                $Admin.email = "info@leonardopinheiro.net";
+                $Admin.username = "leo";
+                $Admin.password = "secretpassword";
+                $Admin.confirm_password = "secretpassword";
 
+                # Saves the object in memory in the database.
+                [bool]$Result = $Admin.Save()
+                if (-not $Result) {
+                    PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+                }
+                else {
+                    PrintSuccessMessage -SuccessMessage "Object saved."
+                }
+            }
+            else {
+                PrintErrorMessage -ErrorMessage "The ID was not found."
+            }
+        #>
 
+        [bool]$Result = $false
 
+        $this.Validate()
+        if ($this.Errors.Count -ne 0) {
+            # If there are any errors, returns the ($false) $Result.
+            return $Result
+        }
 
+        [System.Collections.Hashtable]$Attributes = $this.SanitizedAttributes()
 
+        $Sql = "UPDATE $($this.GetType()::TableName) SET "
+        ForEach ($Key in $Attributes.Keys) {$Sql += "$($Key)='$($Attributes[$Key])', "}
+        $Sql = $Sql -replace ", $"
+        $Sql += " WHERE id='$($this.GetType()::Database.RealEscapeString($this.id))' "
+        $Sql += "LIMIT 1"
 
+        $Result = $this.GetType()::Database.Query($Sql, $true)[0]
 
+        return $Result
 
-
-        return [System.Collections.ArrayList]@()
     }
 
     [bool]Save() {
@@ -354,8 +395,6 @@ class DatabaseObject {
         <#
         .SYNOPSIS
             Sanitizes (escapes the values) of the object before sending to the database.
-        .PARAMETER [type]$TargetType
-            The class itself.
         .OUTPUTS
             Hashtable with the values escaped.
         #>
@@ -376,17 +415,19 @@ class DatabaseObject {
             Deletes, in the database, the record that corresponds to the current
             instance object in memory.
         .DESCRIPTION
-            After deleting, the instance object will still
-            exist, even though the database record does not.
-            This can be useful, as in the example below.
+            After deleting, the instance object will still exist, even though
+            the database record does not. This can be useful, as in the example
+            below.
         .OUTPUTS
-            An empty ArrayList.
+            $true if successful. $false otherwise.
         .EXAMPLE
             $Admin = [Admins]::FindById([Admins], 26)[0]
             $Result = $Admin.Delete()
             if ($Result) {
                 PrintSuccessMessage -SuccessMessage "The Admin '$($Admin.first_name)' was successfully deleted."
             }
+            # But, for example, we can't call $Admin.Update() after
+            # calling $Admin.Delete().
         #>
 
         $Sql = "DELETE FROM $($this::TableName) "
