@@ -9,7 +9,7 @@
 . "$($PSScriptRoot)\..\config\Initialize.ps1"
 # . "$($PSScriptRoot)\..\src\databases\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\src\databases\DatabaseFunctions.ps1"
-. "$($PSScriptRoot)\..\src\databases\DatabaseObject.ps1"
+. "$($PSScriptRoot)\..\src\appclasses\Admin.ps1"
 
 # Main function.
 function Main {
@@ -195,7 +195,7 @@ function Main {
         $Admin.first_name = "Leonardo";
         $Admin.last_name = "Pinheiro";
         $Admin.email = "info@leonardopinheiro.net";
-        $Admin.username = "leo";
+        $Admin.username = "leon";
         $Admin.password = "secretpassword";
         $Admin.confirm_password = "secretpassword";
 
