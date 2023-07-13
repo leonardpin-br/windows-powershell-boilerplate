@@ -20,14 +20,15 @@
 . "$($PSScriptRoot)\DatabaseFunctions.ps1"
 . "$($PSScriptRoot)\ConnectionDB.ps1"
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
+. "$($PSScriptRoot)\..\shared\ValidationFunctions.ps1"
 
 class DatabaseObject {
 
     # [ConnectionDB] object that will store the connection.
     hidden static $Database
-    hidden static $TableName
-    hidden static $Columns
-    $Errors = [System.Collections.ArrayList]@()
+    hidden static [string]$TableName = ""
+    hidden static [System.Collections.ArrayList]$DbColumns = @()
+    [System.Collections.ArrayList]$Errors = @()
 
     # Makes this class abstract.
     DatabaseObject() {
@@ -75,19 +76,21 @@ class DatabaseObject {
             Throws if the query does not bring back any result.
         #>
 
-        $Result = $TargetType::Database.Query($Sql, $false)
-        if (-not $Result) {
+        [System.Collections.ArrayList]$ResultSet = $TargetType::Database.Query($Sql, $false)
+        if ($ResultSet[0] -eq $false) {
             $ErrorMessage = "Database query failed."
             PrintErrorMessage -ErrorMessage $ErrorMessage
-            throw $ErrorMessage
+
+            # If the query was unsuccessful, returns the ArrayList with $false in it.
+            return $ResultSet
         }
 
         # Results into objects
         $ObjectArray = [System.Collections.ArrayList]@()
         $NewInstance = $null
 
-        for ($i = 0; $i -lt $Result.Count; $i++) {
-            $NewInstance = $TargetType::Instantiate($TargetType, $Result[$i])[0]
+        for ($i = 0; $i -lt $ResultSet.Count; $i++) {
+            $NewInstance = $TargetType::Instantiate($TargetType, $ResultSet[$i])[0]
             $ObjectArray.Add( $NewInstance )
         }
 
@@ -128,7 +131,7 @@ class DatabaseObject {
         #>
 
         $Sql = "SELECT COUNT(*) FROM $($TargetType::TableName)"
-        $ResultSet = $TargetType::Database.Query($Sql, $null)
+        $ResultSet = $TargetType::Database.Query($Sql, $false)
         $Row = $ResultSet[0]
         $Value = $Row["COUNT(*)"]
 
@@ -146,14 +149,24 @@ class DatabaseObject {
         .OUTPUTS
             An ArrayList containing one object corresponding to the database record.
         .EXAMPLE
-            $Admin = [Admins]::FindById([Admins], 1)[0]
-            Write-Host "ID: $($Admin.id)"
-            Write-Host "First name: $($Admin.first_name)"
+            $Admin = [Admins]::FindById([Admins], 1000)[0]
+            if ($Admin) {
+                PrintSuccessMessage -SuccessMessage "The admin '$($Admin.first_name)' was found."
+            }
+            else {
+                PrintErrorMessage -ErrorMessage "The ID was not found."
+            }
         #>
 
         $Sql = "SELECT * FROM $($TargetType::TableName) "
         $Sql += "WHERE id='$($TargetType::Database.RealEscapeString($Id))'"
         $ObjectArray = $TargetType::FindBySql($TargetType, $Sql)
+
+        # If the query was unsuccessful.
+        if ($ObjectArray[0] -eq $false) {
+            $ReturnValue = $null
+            $ObjectArray[0] = $ReturnValue
+        }
 
         return $ObjectArray
 
@@ -190,87 +203,238 @@ class DatabaseObject {
         return $ObjectArray
     }
 
-    [System.Collections.ArrayList]Delete() {
+    hidden [System.Collections.ArrayList]Validate() {
+        <#
+        .SYNOPSIS
+            Every class that extends this one (DatabaseObject) must implement this method.
+        .OUTPUTS
+            The errors string ArrayList.
+        .NOTES
+            Information or caveats about the function e.g. 'This function is not supported in Linux'
+        #>
+
+        $this.Errors = [System.Collections.ArrayList]@()
+
+        return $this.Errors
+    }
+
+    hidden [bool]Create() {
+        <#
+        .SYNOPSIS
+            Creates a record in the database with the properties' values of the
+            current instance in memory.
+        .OUTPUTS
+            The result of the Query() method executed inside this method. It is
+            always an ArrayList. Inside it, $false | $true | @( @{} ).
+        #>
+
+        [bool]$Result = $false
+
+        $this.Validate()
+        if($this.Errors.count -ne 0) {
+            # If there are any errors, returns the ($false) $Result.
+            return $Result
+        }
+
+        $Attributes = $this.SanitizedAttributes()
+
+        $Sql = "INSERT INTO $($this.GetType()::TableName) ("
+        ForEach ($Key in $Attributes.Keys) {$Sql += "$($Key), "}
+        $Sql = $Sql -replace ", $"
+        $Sql += ") VALUES ('"
+        ForEach ($Value in $Attributes.Values) {$Sql += "$($Value)', '"}
+        $Sql = $Sql -replace ", '$"
+        $Sql += ")"
+
+        $Result = $this.GetType()::Database.Query($Sql, $true)[0]
+
+        if ($Result) {
+            $this.id = $this.GetType()::Database.InsertId
+        }
+
+        return $Result
+
+    }
+
+    hidden [bool]Update() {
+        <#
+        .SYNOPSIS
+            Updates the database with the properties' values of the current
+            instance in memory.
+        .OUTPUTS
+            The result of the Query() method executed inside this method.
+            $true if the update is successful. $false otherwise.
+        .EXAMPLE
+            $Admin = [Admins]::FindById([Admins], 28)[0]
+            if ($Admin) {
+                $Admin.first_name = "Leonardo";
+                $Admin.last_name = "Pinheiro";
+                $Admin.email = "info@leonardopinheiro.net";
+                $Admin.username = "leo";
+                $Admin.password = "secretpassword";
+                $Admin.confirm_password = "secretpassword";
+
+                # Saves the object in memory in the database.
+                [bool]$Result = $Admin.Save()
+                if (-not $Result) {
+                    PrintErrorMessage -ErrorMessage "The first error in the validation was: '$($Admin.Errors[0])'. There may be more."
+                }
+                else {
+                    PrintSuccessMessage -SuccessMessage "Object saved."
+                }
+            }
+            else {
+                PrintErrorMessage -ErrorMessage "The ID was not found."
+            }
+        #>
+
+        [bool]$Result = $false
+
+        $this.Validate()
+        if ($this.Errors.Count -ne 0) {
+            # If there are any errors, returns the ($false) $Result.
+            return $Result
+        }
+
+        [System.Collections.Hashtable]$Attributes = $this.SanitizedAttributes()
+
+        $Sql = "UPDATE $($this.GetType()::TableName) SET "
+        ForEach ($Key in $Attributes.Keys) {$Sql += "$($Key)='$($Attributes[$Key])', "}
+        $Sql = $Sql -replace ", $"
+        $Sql += " WHERE id='$($this.GetType()::Database.RealEscapeString($this.id))' "
+        $Sql += "LIMIT 1"
+
+        $Result = $this.GetType()::Database.Query($Sql, $true)[0]
+
+        return $Result
+
+    }
+
+    [bool]Save() {
+        # A new record will not have an ID yet.
+        if(Is-Set -Variable $this.id) {
+            return $this.Update()
+        }
+        else {
+            return $this.Create()
+        }
+    }
+
+    [void]MergeAttributes([System.Collections.Hashtable]$Arguments) {
+        <#
+        .SYNOPSIS
+            Merges the attributes from the given Hashtable into the object in
+            memory created from the FindById() method.
+        .PARAMETER [System.Collections.Hashtable]$Arguments
+            The Hashtable containing the new values to be merged and later updated.
+        .EXAMPLE
+            $Admin = [Admins]::FindById([Admins], 12)[0]
+            if($Admin) {
+                [System.Collections.Hashtable]$Kwargs = @{
+                    # "id" = $null;
+                    "id" = $Admin.id;
+                    "first_name" = $Admin.first_name;
+                    "last_name" = $Admin.last_name;
+                    "email" = $Admin.email;
+                    "username" = $Admin.username;
+                    "hashed_password" = $Admin.hashed_password;
+                }
+
+                $Admin.MergeAttributes($Kwargs)
+                $Result = $Admin.Update()
+                if($Result) {
+                    Write-Host "The admin was updated."
+                }
+                else {
+                    Write-Host "There was an error in the update process."
+                }
+            }
+            else {
+                Write-Host "The ID was not found."
+            }
+        #>
+
+        foreach($Key in $Arguments.Keys) {
+            if (
+                (Get-Member -inputobject $this -name $Key -Membertype Properties) -and
+                -not (Is-Null($Arguments[$Key]))
+                ) {
+                $this.$Key = $Arguments[$Key]
+            }
+        }
+
+    }
+
+    [System.Collections.Hashtable]Attributes() {
+        <#
+        .SYNOPSIS
+            Creates a Hashtable that has, as properties, the database columns
+            (excluding ID) and the corresponding values from the instance object
+            in memory.
+        .PARAMETER [type]$TargetType
+            The class itself.
+        .OUTPUTS
+            Hashtable containing the names of the columns and the
+            corresponding values from the instance object in memory.
+        #>
+
+        [System.Collections.Hashtable]$Attributes = @{}
+
+        foreach ($Column in $this.GetType()::DbColumns) {
+            if($Column -eq 'id') {
+                continue
+            }
+            $Attributes[$Column] = $this.$Column
+        }
+
+        return $Attributes
+
+    }
+
+    hidden [System.Collections.Hashtable]SanitizedAttributes() {
+        <#
+        .SYNOPSIS
+            Sanitizes (escapes the values) of the object before sending to the database.
+        .OUTPUTS
+            Hashtable with the values escaped.
+        #>
+
+        [System.Collections.Hashtable]$Sanitized = @{}
+
+        $this.Attributes().GetEnumerator() | ForEach-Object {
+            $Sanitized[$_.Key] = $this.GetType()::Database.RealEscapeString($_.Value)
+        }
+
+        return $Sanitized
+
+    }
+
+    [bool]Delete() {
         <#
         .SYNOPSIS
             Deletes, in the database, the record that corresponds to the current
             instance object in memory.
         .DESCRIPTION
-            After deleting, the instance object will still
-            exist, even though the database record does not.
-            This can be useful, as in the example below.
+            After deleting, the instance object will still exist, even though
+            the database record does not. This can be useful, as in the example
+            below.
         .OUTPUTS
-            An empty ArrayList.
+            $true if successful. $false otherwise.
         .EXAMPLE
-            $Admin = [Admins]::FindById([Admins], 24)[0]
-            $Admin.Delete()
-            Write-Host "Admin '$($Admin.first_name)' successfully deleted."
+            $Admin = [Admins]::FindById([Admins], 26)[0]
+            $Result = $Admin.Delete()
+            if ($Result) {
+                PrintSuccessMessage -SuccessMessage "The Admin '$($Admin.first_name)' was successfully deleted."
+            }
+            # But, for example, we can't call $Admin.Update() after
+            # calling $Admin.Delete().
         #>
 
         $Sql = "DELETE FROM $($this::TableName) "
         $Sql += "WHERE id='$($this::Database.RealEscapeString($this.id))' "
         $Sql += "LIMIT 1"
-        $Result = $this::Database.Query($Sql, $true)
+        [bool]$Result = $this::Database.Query($Sql, $true)[0]
         return $Result
     }
 
 }
-
-class Admins : DatabaseObject {
-    hidden static $TableName = "admins"
-    hidden static $DBColumns = [System.Collections.ArrayList]@(
-        'id',
-        'first_name',
-        'last_name',
-        'email',
-        'username',
-        'hashed_password'
-    )
-
-    $id
-    $first_name
-    $last_name
-    $email
-    $username
-    $hashed_password
-    $password
-    $confirm_password
-    $password_required = $True
-
-    Admins($Properties) {
-
-        if ($null -ne $Properties) {
-            $this.first_name       = $Properties["first_name"]
-            $this.last_name        = $Properties["last_name"]
-            $this.email            = $Properties["email"]
-            $this.username         = $Properties["username"]
-            $this.password         = $Properties["password"]
-            $this.confirm_password = $Properties["confirm_password"]
-        }
-        else {
-            $this.first_name       = ""
-            $this.last_name        = ""
-            $this.email            = ""
-            $this.username         = ""
-            $this.password         = ""
-            $this.confirm_password = ""
-        }
-
-    }
-
-}
-
-# function Main {
-#     Clear-Host
-
-#     # $admin = [Admins]::new()
-#     # Write-Host $admin.Name
-
-#     $Database = [ConnectionDB]::new()
-#     $database = [DatabaseObject]::SetDatabase($Database)
-#     $SuperclassDatabase = [DatabaseObject]::Database
-#     $SubclassDatabase = [Admins]::Database
-#     Write-Host "Test"
-# }
-
-# Main

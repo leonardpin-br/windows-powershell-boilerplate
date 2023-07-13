@@ -82,13 +82,36 @@ class ConnectionDB {
         <#
         .SYNOPSIS
             Performs a query on the database.
+        .PARAMETER [String]$Sql
+            The query to be executed.
+        .PARAMETER [Boolean]$IsDataChange
+            $true, if it is going to change data. $false otherwise.
+        .OUTPUTS
+            Returns $false on failure.
+            For successful queries which produce a result set, such as SELECT,
+            SHOW, DESCRIBE or EXPLAIN, will return an ArrayList with all records
+            as Hashtables.
+            For other successful queries, will return $true.
+        .EXAMPLE
+            # Example 1:
+            [System.Collections.ArrayList]$ResultSet = $TargetType::Database.Query($Sql, $false)
+            if ($ResultSet[0] -eq $false) { ... }
+
+            # Example 2:
+            $ResultSet = $TargetType::Database.Query($Sql, $false)
+
+            # Example 3:
+            $Result = $this.GetType()::Database.Query($Sql, $true)[0]
+
+            # Example 4:
+            [bool]$Result = $this::Database.Query($Sql, $true)[0]
         #>
 
-        $this.Connection.Open()
-
         # ArrayList that will store the results (one Hashtable for each row).
-        $ResultSet = [System.Collections.ArrayList]@()
-        $Record = [System.Collections.Hashtable]@{}
+        [System.Collections.ArrayList]$ResultSet = @()
+        [System.Collections.Hashtable]$Record = @{}
+
+        $this.Connection.Open()
 
         if ($this.Connection.State -ne "Open") {
 
@@ -100,7 +123,6 @@ class ConnectionDB {
 
         try {
 
-
             # CREATE, UPDATE or DELETE (CRUD)
             if ($IsDataChange) {
 
@@ -109,6 +131,15 @@ class ConnectionDB {
 
                 $this.AffectedRows = $this.SqlCommand.ExecuteNonQuery()
                 $this.InsertId = $this.SqlCommand.LastInsertedId
+
+                if ($this.AffectedRows -ne 0) {
+                    $NonQueryResult = $true
+                    $ResultSet.Add($NonQueryResult)
+                }
+                else {
+                    $NonQueryResult = $false
+                    $ResultSet.Add($NonQueryResult)
+                }
 
             }
 
@@ -123,6 +154,13 @@ class ConnectionDB {
 
                 # Fills the $DataTable with the result set.
                 $DataAdapter.Fill($DataTable)
+
+                # If the query was unsuccessful, returns the ArrayList with $false in it.
+                if ($DataTable.Rows.Count -eq 0) {
+                    $QueryResult = $false
+                    $ResultSet.Add($QueryResult)
+                    return $ResultSet
+                }
 
                 # Fills the hashtable.
                 for ($i = 0; $i -lt $DataTable.Rows.Count; $i++) {
@@ -176,63 +214,3 @@ class ConnectionDB {
     }
 
 }
-
-# function Main {
-#     Clear-Host
-
-#     # READ
-#     # ==========================================================================
-#     $ConnectionDb = [ConnectionDB]::new()
-#     $Sql = "SELECT * FROM admins"
-#     $ResultSet = $ConnectionDb.Query($Sql, $null)
-
-
-#     for ($i = 0; $i -lt $ResultSet.Count; $i++) {
-
-#         $row = $ResultSet[$i]
-
-#         Write-Host "ID: $($row["id"])"
-#         Write-Host "First name: $($row["first_name"])"
-#         Write-Host "Last name: $($row["last_name"])"
-#         Write-Host "Email: $($row["email"])"
-#         Write-Host "Username: $($row["username"])"
-#         Write-Host "Hashed password: $($row["hashed_password"])"
-#         Write-Host "-------------------------------------------`n"
-
-#     }
-
-#     # CREATE
-#     # ==========================================================================
-#     $ConnectionDb = [ConnectionDB]::new()
-#     $Sql = "INSERT INTO admins (first_name, last_name, email, username, hashed_password) "
-#     $Sql += "VALUES ('Leonardo', 'Pinheiro', 'info@leonardopinheiro.net', 'leo', 'zzzz')"
-
-#     $ResultSet = $ConnectionDb.Query($Sql, $True)
-
-#     # UPDATE
-#     # ==========================================================================
-#     $ConnectionDb = [ConnectionDB]::new()
-#     $Sql = "UPDATE admins "
-#     $Sql += "SET username = 'leo' "
-#     $Sql += "WHERE id = 22"
-
-#     $ResultSet = $ConnectionDb.Query($Sql, $True)
-#     if ($ConnectionDb.AffectedRows -eq 0) {
-#         PrintErrorMessage -ErrorMessage "The ID was not found."
-#     }
-
-#     # DELETE
-#     # ==========================================================================
-#     $ConnectionDb = [ConnectionDB]::new()
-#     $Sql = "DELETE FROM admins "
-#     $Sql += "WHERE id = 22 "
-#     $Sql += "LIMIT 1"
-
-#     $ResultSet = $ConnectionDb.Query($Sql, $True)
-#     if ($ConnectionDb.AffectedRows -eq 0) {
-#         PrintErrorMessage -ErrorMessage "The ID was not found."
-#     }
-
-# }
-
-# Main
