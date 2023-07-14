@@ -76,3 +76,45 @@ function PrintSuccessMessage {
     Write-Host "================================================================================================`n`n"
 
 }
+
+
+function PrintMessage([switch]$Success, [switch]$Warning, [switch]$Failure, [String]$Message) {
+    <#
+    .SYNOPSIS
+        Prints a formatted (and easy to read in the console) message.
+    .PARAMETER [switch]$Success
+        Marks the message as a success message.
+    .PARAMETER [switch]$Warning
+        Marks the message as a warning message.
+    .PARAMETER [switch]$Failure
+        Marks the message as an error message.
+    .PARAMETER [String]$Message
+        The message to be printed.
+    .EXAMPLE
+        $Message = "This is the message."
+        PrintMessage -Failure -Message $Message
+    .LINK
+        # How to get the caller Function Name in the called function in PS?
+        https://social.technet.microsoft.com/Forums/Azure/en-US/9b8f3677-8416-4685-978a-7daef61d7c52/how-to-get-the-caller-function-name-in-the-called-function-in-ps?forum=winserverpowershell
+    #>
+
+    Write-Host "`n`n================================================================================================`n"
+    if ($Success) {
+        Write-Host -ForegroundColor Green "Success:"
+    } elseif ($Warning) {
+        Write-Host -ForegroundColor Yellow "Warning:"
+    } elseif ($Failure) {
+        Write-Host -ForegroundColor Red "Error:"
+    } else {
+        Write-Host "Message:"
+    }
+
+    # Gets the caller function of this function.
+    $CallerFunction = (Get-PSCallStack)[1]
+    $CallerFunction = $CallerFunction -replace "at " -replace ",.*"
+
+    Write-Host "$($CallerFunction)(): $($Message)"
+    Write-Host ""
+    Write-Host "================================================================================================`n`n"
+
+}
