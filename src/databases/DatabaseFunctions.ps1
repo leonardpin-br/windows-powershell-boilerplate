@@ -12,24 +12,35 @@ function Connect-MySQL {
     .SYNOPSIS
         Connects to the MySQL server.
     .PARAMETER MySqlData
-        [String] Complete path to the MySQL Connector .dll file.
+        Complete path to the MySQL Connector .dll file.
     .PARAMETER Server
-        [String] Server name or IP.
+        Server name or IP.
     .PARAMETER User
-        [String] The username.
+        The username.
     .PARAMETER Password
-        [String] The password.
+        The password.
     .PARAMETER Database
-        [String] The database name.
+        The database name.
     .OUTPUTS
         ConnectionDB instance object.
+    .EXAMPLE
+        $Connection = [ConnectionDB]::new($MySqlData, $Server, $User, $Password, $Database)
     #>
 
     param(
+        [Parameter(Position = 0, Mandatory = $true)]
         [String]$MySqlData,
+
+        [Parameter(Position = 1, Mandatory = $true)]
         [String]$Server,
+
+        [Parameter(Position = 2, Mandatory = $true)]
         [String]$User,
+
+        [Parameter(Position = 3, Mandatory = $true)]
         [String]$Password,
+
+        [Parameter(Position = 4, Mandatory = $true)]
         [String]$Database
     )
 
@@ -43,10 +54,26 @@ function Disconnect-MySQL {
     <#
     .SYNOPSIS
         Disconnects from the MySQL server.
+    .PARAMETER Connection
+        [ConnectionDB] ConnectionDB instance object.
+    .EXAMPLE
+        try {
+            # CRUD operations
+        }
+
+        catch {
+            # Print error messages.
+            # throw
+        }
+
+        finally {
+            Disconnect-MySQL -Connection $this.Connection
+        }
     #>
 
     param (
         # The connection object.
+        [Parameter(Position = 0, Mandatory = $true)]
         $Connection
     )
 

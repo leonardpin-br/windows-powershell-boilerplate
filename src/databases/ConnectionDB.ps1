@@ -4,15 +4,15 @@
 .DESCRIPTION
     Mimics (loosely and in a very crud way) the mysqli (PHP) class.
 .PARAMETER MySqlData
-    [String] Complete path to the MySQL Connector .dll file.
+    Complete path to the MySQL Connector .dll file.
 .PARAMETER Server
-    [String] Server name or IP.
+    Server name or IP.
 .PARAMETER User
-    [String] The username.
+    The username.
 .PARAMETER Password
-    [String] The password.
+    The password.
 .PARAMETER Database
-    [String] The database name.
+    The database name.
 .LINK
     # Automate MySQL Integration Tasks from PowerShell
     https://www.cdata.com/kb/tech/mysql-ado-powershell.rst
@@ -23,10 +23,17 @@
     # 6.1.4 Working with Parameters
     https://dev.mysql.com/doc/connector-net/en/connector-net-tutorials-parameters.html
 .EXAMPLE
-    $database = Connect-MySQL -MySqlData $MySqlData -Server $Server -User $User -Password $Password -Database $Database
+    # The script containing this class must be imported:
+    . "$($PSScriptRoot)\ConnectionDB.ps1"
+
+    ...
+
+    $Connection = [ConnectionDB]::new($MySqlData, $Server, $User, $Password, $Database)
 #>
 
+
 . "$($PSScriptRoot)\..\shared\Functions.ps1"
+
 
 class ConnectionDB {
 
